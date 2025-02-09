@@ -6,7 +6,11 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
+# Ignore node_modules folder
+node_modules/
 
+# Ignore environment file
+.env
 node_modules
 dist
 dist-ssr
