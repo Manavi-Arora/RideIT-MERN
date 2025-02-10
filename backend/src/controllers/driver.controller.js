@@ -1,7 +1,5 @@
 import { generateToken } from "../lib/utils.js";
-import User from "../models/user.model.js";
 import Driver from "../models/driver.model.js";
-import Ride from "../models/ride.model.js";
 import bcrypt from "bcryptjs";
 
 
@@ -35,14 +33,14 @@ export const signup = async (req, res) => {
         return res.status(400).json({ message: "Invalid Phone Number format" });
       }
   
-      const user = await User.findOne({ email });
+      const user = await Driver.findOne({ email });
   
       if (user) return res.status(400).json({ message: "Email already exists" });
   
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password, salt);
   
-      const newUser = new User({
+      const newUser = new Driver({
         fullName,
         email,
         phoneNumber,
@@ -73,7 +71,7 @@ export const signup = async (req, res) => {
   export const login = async (req, res) => {
     const { email, password } = req.body;
     try {
-      const user = await User.findOne({ email });
+      const user = await Driver.findOne({ email });
   
       if (!user) {
         return res.status(400).json({ message: "Invalid credentials" });
@@ -107,25 +105,3 @@ export const signup = async (req, res) => {
       res.status(500).json({ message: "Internal Server Error" });
     }
   };
-
-    export const getUserRidesHistory = async (req, res) => {
-        try {
-        const userId = req.userId;  // Assuming the user ID is available from the authenticated JWT
-    
-        // Fetch rides associated with the user, populate fields from the User and Driver models if needed
-        const rides = await Ride.find({ rider: userId })
-            .sort({ pickupTime: -1 })  // Sort by pickup time, newest first
-            .populate("rider", "fullName email phoneNumber profilePic")  // Populate rider's details
-            .populate("driver", "fullName email phoneNumber profilePic")  // Populate driver's details
-    
-        if (rides.length === 0) {
-            return res.status(404).json({ message: "No ride history found for this user." });
-        }
-    
-        // Respond with the ride history
-        res.status(200).json({ rides });
-        } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Server error", error: error.message });
-        }
-    };
