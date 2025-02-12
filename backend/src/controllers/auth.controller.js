@@ -31,13 +31,14 @@ export const signup = async (req, res) => {
         return res.status(400).json({ message: "Password must be at least 8 characters" });
       }
 
-      if (phoneNumber.length != 10) {
+      if (phoneNumber.length != 10 || !/^\d{10}$/.test(phoneNumber)) {
         return res.status(400).json({ message: "Invalid Phone Number format" });
       }
   
       const user = await User.findOne({ email });
-  
+      const phone = await User.findOne({phoneNumber});
       if (user) return res.status(400).json({ message: "Email already exists" });
+      if (phone) return res.status(400).json({ message: "Phone Number is already registered" });
   
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password, salt);

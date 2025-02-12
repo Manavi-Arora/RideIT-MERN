@@ -40,7 +40,7 @@ const SignUp = (props) => {
     if (!formData.password) return toast.error("Password is required");
     if (!formData.confirmPass) return toast.error("Confirm Password is required");
     if (formData.password.length < 8) return toast.error("Password must be at least 8 characters");
-    if (formData.phoneNumber.length != 10) return toast.error("Invalid Phone Number");
+    if (formData.phoneNumber.length != 10 || !/^\d{10}$/.test(formData.phoneNumber)) return toast.error("Invalid Phone Number");
     if (formData.confirmPass != formData.password) return toast.error("Passwords do not match");
     props.setProgress(20);
     return true;
@@ -158,7 +158,7 @@ const SignUp = (props) => {
             </div>
             <div>
               <button type="submit" disabled={isSigningUp} className="btn btn-block bg-black text-white p-2 rounded-md hover:bg-gray-800 text-center w-full">{isSigningUp ? (
-                <div className="flex">
+                <div className="flex items-center justify-center">
                   <Loader className="h-5 w-5 animate-spin" />
                   Loading...
                 </div>
