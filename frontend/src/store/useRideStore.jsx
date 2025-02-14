@@ -5,6 +5,8 @@ import toast from "react-hot-toast";
 export const useRideStore = create((set, get) => ({
     pickup : null,
     dropoff : null,
+    userPosition : null,
     setPickup: (pickup) => set({ pickup }),
     setDropoff: (dropoff) => set({ dropoff }),
+    setUserPosition: (userPosition) => set({ userPosition }),
 }))
