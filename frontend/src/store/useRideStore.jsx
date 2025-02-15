@@ -6,7 +6,9 @@ export const useRideStore = create((set, get) => ({
     pickup : null,
     dropoff : null,
     userPosition : null,
+    distance : null,
     setPickup: (pickup) => set({ pickup }),
     setDropoff: (dropoff) => set({ dropoff }),
     setUserPosition: (userPosition) => set({ userPosition }),
+    setDistance: (distance) => set({ distance }),
 }))

@@ -3,7 +3,7 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import { useEffect, useState } from "react";
 import { useRideStore } from "../../store/useRideStore";
-import RateList from "./RateList"
+import RateList from "../user/Ride/RateList"
 
 const blueIcon = new L.Icon({
   iconUrl: 'pick.png',
@@ -27,7 +27,7 @@ const userIcon = new L.Icon({
 });
 
 const MyMap = () => {
-  const { pickup, dropoff, userPosition, setUserPosition } = useRideStore();
+  const { pickup, dropoff, userPosition, setUserPosition, distance, setDistance } = useRideStore();
   const [pickupPosition, setPickupPosition] = useState(null);
   const [dropoffPosition, setDropoffPosition] = useState(null);
   const [route, setRoute] = useState([]);
@@ -73,7 +73,7 @@ const MyMap = () => {
             `https://api.geoapify.com/v1/routing?waypoints=${origin}|${destination}&mode=drive&apiKey=${apiKey}`
           );
           const data = await response.json();
-
+          console.log(data);
           if (data.features && data.features.length > 0) {
             const routeGeometry = data.features[0].geometry;
             if (routeGeometry && routeGeometry.coordinates) {
@@ -81,6 +81,9 @@ const MyMap = () => {
               const geojson = routeCoords.map(([lng, lat]) => [lat, lng]);
               setRoute(geojson);
             }
+          }
+          if (data.features[0].properties && data.features[0].properties.distance) {
+            await setDistance((data.features[0].properties.distance / 1000).toFixed(2)); // Convert meters to kilometers
           }
         } catch (error) {
           console.error("Error fetching route:", error);
@@ -139,7 +142,7 @@ const MyMap = () => {
         </MapContainer>
       </div>
       {pickupPosition && dropoffPosition && (
-        <div className="w-1/3 h-[calc(100vh-10vh)] p-4 bg-white shadow-lg">
+        <div className="w-1/2 h-[calc(100vh-10vh)] overflow-y-auto p-4 bg-white shadow-lg">
           <RateList />
         </div>
       )}
