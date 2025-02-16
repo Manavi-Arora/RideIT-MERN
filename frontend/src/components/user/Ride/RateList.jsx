@@ -7,13 +7,18 @@ import { useRideStore } from "../../../store/useRideStore";
 const FUEL_PRICE_PER_LITER = 100; // Example fuel price per liter
 
 const RateList = () => {
-  const { distance } = useRideStore();
+  const { distance, handlePayment } = useRideStore();
   const [rides, setRides] = useState([]);
   const [selectedRide, setSelectedRide] = useState(null);
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [discountedPrices, setDiscountedPrices] = useState({});
   const [couponCode, setCouponCode] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+
+  const Payment = () => {
+    const price = discountedPrices?.[selectedRide.name] || selectedRide.price;
+    handlePayment(price);
+  };
 
   useEffect(() => {
     if (distance) {
@@ -93,7 +98,7 @@ const RateList = () => {
       {rides.map((ride, index) => (
         <div
           key={index}
-          className={`p-4 mb-2 rounded-lg shadow flex items-center justify-between cursor-pointer ${selectedRide?.name === ride.name ? "bg-blue-200 border-2 border-blue-500" : "bg-gray-100"
+          className={`p-4 mb-2 rounded-lg shadow flex items-center justify-between cursor-pointer ${selectedRide?.name === ride.name ? "bg-gray-300 border-2 border-black" : "bg-gray-100"
             }`}
           onClick={() => handleRideSelect(ride)}
         >
@@ -116,12 +121,12 @@ const RateList = () => {
             </div>
           </div>
           <div>
-            <p className="text-lg font-bold">
+            <div className="text-lg font-bold">
               ₹{discountedPrices[ride.name] || ride.price}{" "}
               {discountedPrices[ride.name] && (
-                <p className="line-through text-gray-400 text-sm">₹{ride.price}</p>
+                <div className="line-through text-gray-400 text-sm">₹{ride.price}</div>
               )}
-            </p>
+            </div>
           </div>
         </div>
       ))}
@@ -156,12 +161,12 @@ const RateList = () => {
           <p className="text-lg">Price: ₹{discountedPrices[selectedRide.name] || selectedRide.price}</p>
           <p className="text-lg font-bold">Payment Method</p>
           <div className="flex items-center justify-center">
-            <button className="mt-2 bg-black text-white px-4 py-2 rounded flex items-center mx-auto">
+            <button className="mt-2 bg-black text-white px-4 py-2 rounded flex items-center mx-auto" onClick={Payment}>
               <CreditCard className="w-5 h-5 mr-2" /> Pay via UPI
             </button>
             <span>OR</span>
-            <button className="mt-2 bg-black text-white px-4 py-2 rounded flex items-center mx-auto">
-              <CircleDollarSign className="w-5 h-5 mr-2" /> Pay By Cash
+            <button className="mt-2 bg-black text-white px-4 py-2 rounded flex items-center mx-auto" >
+              <CircleDollarSign className="w-5 h-5 mr-2" /> Pay via Cash
             </button>
           </div>
 
