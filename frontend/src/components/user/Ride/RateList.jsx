@@ -1,13 +1,18 @@
 import { useEffect, useState } from "react";
-import { CheckCircle, CreditCard, Tag, CircleDollarSign } from "lucide-react";
+import { CheckCircle, CreditCard, Tag, CircleDollarSign, Search } from "lucide-react";
 import rideData from "./RideData";
 import RideCoupons from "./RideCoupons";
 import { useRideStore } from "../../../store/useRideStore";
+import toast from "react-hot-toast";
+import { useDriverStore } from "../../../store/useDriverStore";
+import { useAuthStore } from "../../../store/useAuthStore";
 
 const FUEL_PRICE_PER_LITER = 100; // Example fuel price per liter
 
 const RateList = () => {
-  const { distance, handlePayment } = useRideStore();
+  const {findingDriver, fetchDrivers, assignDriver, setFindingDriver,drivers} = useDriverStore();
+  const {setShowSidebar} = useAuthStore(); 
+  const { distance, handlePayment,setShowRateList, setPaymentMethod, setRideDetials } = useRideStore();
   const [rides, setRides] = useState([]);
   const [selectedRide, setSelectedRide] = useState(null);
   const [appliedCoupon, setAppliedCoupon] = useState(null);
@@ -15,10 +20,41 @@ const RateList = () => {
   const [couponCode, setCouponCode] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const Payment = () => {
+  const PaymentViaUPI = () => {
+    toast.success("Payment Option : UPI selected!");
     const price = discountedPrices?.[selectedRide.name] || selectedRide.price;
     handlePayment(price);
+    setPaymentMethod("Online");
   };
+
+  const PaymentViaCash = () =>{
+    toast.success("Payment Option : Cash selected!");
+    setPaymentMethod("Cash");
+  }
+
+  const FindDriver = async() =>{
+    if (!selectedRide) {
+      toast.error("Please select a ride first!");
+      return;
+    }
+  
+    // Storing the final ride details before searching for a driver
+    setRideDetials({
+      name: selectedRide.name,
+      price: discountedPrices[selectedRide.name] || selectedRide.price,
+      passengers: selectedRide.passengers,
+      timeAway: selectedRide.timeAway,
+      time: selectedRide.time,
+      description: selectedRide.description,
+    });
+    setShowSidebar(false);
+    setFindingDriver(true);
+    await fetchDrivers();
+    console.log(drivers);
+    assignDriver();
+    setFindingDriver(false);
+    setShowRateList(false);
+  }
 
   useEffect(() => {
     if (distance) {
@@ -45,7 +81,7 @@ const RateList = () => {
           originalPrice: originalPrice.toFixed(2),
         };
       });
-
+      
       setRides(updatedRides);
     }
   }, [distance]);
@@ -156,21 +192,25 @@ const RateList = () => {
       </div>
 
       {selectedRide && (
+
         <div className="mt-6 p-4 bg-white shadow-lg text-center">
           <h3 className="text-lg font-bold">Selected Ride: {selectedRide.name}</h3>
           <p className="text-lg">Price: ₹{discountedPrices[selectedRide.name] || selectedRide.price}</p>
           <p className="text-lg font-bold">Payment Method</p>
           <div className="flex items-center justify-center">
-            <button className="mt-2 bg-black text-white px-4 py-2 rounded flex items-center mx-auto" onClick={Payment}>
+            <button className="mt-2 bg-black text-white px-4 py-2 rounded flex items-center mx-auto" onClick={PaymentViaUPI}>
               <CreditCard className="w-5 h-5 mr-2" /> Pay via UPI
             </button>
             <span>OR</span>
-            <button className="mt-2 bg-black text-white px-4 py-2 rounded flex items-center mx-auto" >
+            <button className="mt-2 bg-black text-white px-4 py-2 rounded flex items-center mx-auto" onClick={PaymentViaCash}>
               <CircleDollarSign className="w-5 h-5 mr-2" /> Pay via Cash
             </button>
           </div>
-
+          <button className="mt-5 bg-black text-white px-4 py-2 rounded flex items-center mx-auto" onClick= {FindDriver}>
+            <Search className="w-5 h-5 mr-2" /> Search Driver
+          </button>
         </div>
+
       )}
     </div>
   );

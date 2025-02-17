@@ -2,13 +2,17 @@ import React from 'react'
 import Header from '../../components/user/Header';
 import Sidebar from '../../components/user/Sidebar';
 import MapContainer from '../../components/user/MapContainer';
+import { useDriverStore } from '../../store/useDriverStore';
+import { useAuthStore } from '../../store/useAuthStore';
 
 const Home = () => {
+  const {findingDriver} = useDriverStore();
+  const {showSidebar} = useAuthStore();
   return (
     <div className="flex flex-col w-screen h-screen">
       <Header />
       <div className="flex flex-grow">
-        <Sidebar />
+        {showSidebar && <Sidebar />}
         <MapContainer />
       </div>
     </div>

@@ -4,6 +4,8 @@ import L from "leaflet";
 import { useEffect, useState } from "react";
 import { useRideStore } from "../../store/useRideStore";
 import RateList from "../user/Ride/RateList"
+import { useDriverStore } from "../../store/useDriverStore";
+import DriverDetails from "./Ride/DriverDetails";
 
 const blueIcon = new L.Icon({
   iconUrl: 'pick.png',
@@ -27,7 +29,8 @@ const userIcon = new L.Icon({
 });
 
 const MyMap = () => {
-  const { pickup, dropoff, userPosition, setUserPosition, distance, setDistance } = useRideStore();
+  const { pickup, dropoff, userPosition, setUserPosition, distance, setDistance, showRateList, setShowRateList } = useRideStore();
+  const {assignDriver} = useDriverStore();
   const [pickupPosition, setPickupPosition] = useState(null);
   const [dropoffPosition, setDropoffPosition] = useState(null);
   const [route, setRoute] = useState([]);
@@ -45,6 +48,9 @@ const MyMap = () => {
     } else {
       setDropoffPosition(null);
       setRoute([]);
+    }
+    if(pickup && dropoff){
+      setShowRateList(true);
     }
   }, [pickup, dropoff]);
 
@@ -142,8 +148,8 @@ const MyMap = () => {
         </MapContainer>
       </div>
       {pickupPosition && dropoffPosition && (
-        <div className="w-1/2 h-[calc(100vh-10vh)] overflow-y-auto p-4 bg-white shadow-lg">
-          <RateList />
+        <div className="w-5/11 lg:w-1/3 h-[calc(100vh-10vh)] overflow-y-auto p-4 bg-white shadow-lg">
+         {showRateList ? <RateList /> : <DriverDetails />} 
         </div>
       )}
     </div>

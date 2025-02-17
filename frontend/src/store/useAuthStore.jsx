@@ -9,6 +9,8 @@ export const useAuthStore = create((set, get) => ({
   isSigningUp: false,
   isLoggingIn: false,
   isCheckingAuth: true,
+  showSidebar : true,
+  setShowSidebar : (value) => set({showSidebar : value}),
 
   checkAuth: async () => {
     try {
