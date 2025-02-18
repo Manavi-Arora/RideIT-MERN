@@ -11,7 +11,7 @@ const DriverDetails = () => {
     }
 
     return (
-        <div className="relative transition hover:scale-[1.02]">
+        <div className="relative transition hover:scale-[1.02] m-7">
             {/* Header */}
             <div className="flex justify-between items-center">
                 <h2 className="text-xl font-semibold flex items-center gap-2">
@@ -23,11 +23,11 @@ const DriverDetails = () => {
             {/* Pickup & Dropoff */}
             <div className="mt-4 space-y-3  p-4 rounded-lg shadow-lg">
                 <div className="flex items-center gap-2">
-                    <MapPin className="text-blue-500" size={36} />
+                    <MapPin color="#0040ff" size = {36} />
                     <p className="text-lg">{pickup.value}</p>
                 </div>
                 <div className="flex items-center gap-2">
-                    <MapPin className="text-red-500" size={32} />
+                    <MapPin color="#ff0000" size = {36} />
                     <p className="text-lg">{dropoff.value}</p>
                 </div>
             </div>

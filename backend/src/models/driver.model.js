@@ -50,8 +50,13 @@ const driverSchema = new mongoose.Schema({
       type: Number,
       default: 0,
     },
+    location: { 
+      type: { type: String, default: "Point" }, 
+      coordinates: { type: [Number], default: [0, 0] }  // [longitude, latitude]
+    }
 },{ timestamps: true });
 
-const Driver = mongoose.model("Driver", driverSchema);
+driverSchema.index({ location: "2dsphere" }); // Index for geospatial queries
 
+const Driver = mongoose.model("Driver", driverSchema);
 export default Driver;
