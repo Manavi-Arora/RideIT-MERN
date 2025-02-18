@@ -6,9 +6,17 @@ const DriverDetails = () => {
     const { assignedDriver } = useDriverStore();
     const { pickup, dropoff, rideDetails, paymentMethod } = useRideStore();
 
-    if (!assignedDriver || Object.keys(assignedDriver).length === 0) {
-        return <div className="text-gray-500 text-center p-4">Finding the best driver for you...</div>;
+    if (!assignedDriver || Object.keys(assignedDriver || {}).length === 0) {
+        return (
+            <video autoPlay playsInline loop className="c-hhrJks h-full" style={{ width: "1024px" }} >
+                <source
+                    src="cab_book.mp4"
+                    type="video/mp4"
+                />
+            </video>
+        );
     }
+    
 
     return (
         <div className="relative transition hover:scale-[1.02] m-7">

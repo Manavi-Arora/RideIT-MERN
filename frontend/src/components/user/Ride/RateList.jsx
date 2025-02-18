@@ -128,9 +128,9 @@ const RateList = () => {
   };
 
   return (
-    <div>
-      <h2 className="text-lg font-bold mb-4">Available Rides</h2>
-
+    <div className="m-5">
+      <h1 className="text-lg font-bold mb-4 text-center">Available Rides</h1>
+      {console.log("Rides",rides)}
       {rides.map((ride, index) => (
         <div
           key={index}
@@ -167,7 +167,7 @@ const RateList = () => {
         </div>
       ))}
 
-      <div className="mt-4 p-4 bg-white shadow-lg">
+      {selectedRide && <div className="mt-4 p-4 bg-white shadow-lg">
         <h3 className="text-lg font-bold flex items-center">
           <Tag className="w-5 h-5 mr-2 text-yellow-500" /> Apply Coupon
         </h3>
@@ -189,7 +189,7 @@ const RateList = () => {
         {appliedCoupon && !errorMessage && (
           <p className="text-green-500 mt-2">Coupon "{appliedCoupon}" applied!</p>
         )}
-      </div>
+      </div>}
 
       {selectedRide && (
 

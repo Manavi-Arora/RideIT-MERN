@@ -111,7 +111,49 @@ const MyMap = () => {
       return () => navigator.geolocation.clearWatch(watchId);
     }
   }, [assignedDriver]);
-
+  useEffect(() => {
+    const getRoute = async (start, end, setRouteCallback) => {
+      const apiKey = "4881edf15f62432dbcd861fdbb4f0983";
+      const origin = start.join(",");
+      const destination = end.join(",");
+  
+      try {
+        const response = await fetch(
+          `https://api.geoapify.com/v1/routing?waypoints=${origin}|${destination}&mode=drive&apiKey=${apiKey}`
+        );
+        const data = await response.json();
+        if (data.features && data.features.length > 0) {
+          const routeGeometry = data.features[0].geometry;
+          if (routeGeometry && routeGeometry.coordinates) {
+            const routeCoords = routeGeometry.coordinates[0];
+            const geojson = routeCoords.map(([lng, lat]) => [lat, lng]);
+            setRouteCallback(geojson);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching route:", error);
+      }
+    };
+  
+    if (pickupPosition && dropoffPosition) {
+      if (driverPosition) {
+        // Calculate distance between driver and pickup
+        const driverToPickupDistance = L.latLng(driverPosition).distanceTo(L.latLng(pickupPosition));
+  
+        if (driverToPickupDistance > 50) {
+          // 🚗 Driver has not reached pickup, show route from driver to pickup
+          getRoute(driverPosition, pickupPosition, setRoute);
+        } else {
+          // ✅ Driver has reached pickup, show route from pickup to dropoff
+          getRoute(pickupPosition, dropoffPosition, setRoute);
+        }
+      } else {
+        // Default: Show route from pickup to dropoff
+        getRoute(pickupPosition, dropoffPosition, setRoute);
+      }
+    }
+  }, [pickupPosition, dropoffPosition, driverPosition]);
+  
   useEffect(() => {
     if (pickupPosition && dropoffPosition) {
       const getRoute = async () => {
@@ -199,7 +241,7 @@ const MyMap = () => {
         </MapContainer>
       </div>
       {pickupPosition && dropoffPosition && (
-        <div className={`${showRateList ? "w-3/7" : "w-1/2"} h-[calc(100vh-10vh)] overflow-y-auto bg-white shadow-lg`}>
+        <div className={`w-1/2 h-[calc(100vh-10vh)] overflow-y-auto bg-white shadow-lg`}>
           {showRateList ? <RateList /> : <DriverDetails />}
         </div>
       )}
