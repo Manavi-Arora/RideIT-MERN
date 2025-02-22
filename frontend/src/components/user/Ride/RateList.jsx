@@ -40,7 +40,7 @@ const RateList = () => {
     setShowSidebar(false);
     setFindingDriver(true);
     await fetchDrivers();
-    console.log(drivers);
+    //console.log(drivers);
     assignDriver();
     setFindingDriver(false);
     setShowRateList(false);
@@ -120,7 +120,6 @@ const RateList = () => {
   return (
     <div className="m-5">
       <h1 className="text-lg font-bold mb-4 text-center">Available Rides</h1>
-      {console.log("Rides",rides)}
       {rides.map((ride, index) => (
         <div
           key={index}
