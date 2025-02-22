@@ -1,11 +1,24 @@
 import React from "react";
 import { useDriverStore } from "../../../store/useDriverStore";
-import { MapPin, CreditCard, Car, Clock, User, BadgeCheck, IndianRupee } from "lucide-react";
+import { MapPin, CreditCard, Car, Clock, User, BadgeCheck, IndianRupee, CircleDollarSign } from "lucide-react";
 import { useRideStore } from "../../../store/useRideStore";
+import toast from "react-hot-toast";
+
 const DriverDetails = () => {
     const { assignedDriver } = useDriverStore();
-    const { pickup, dropoff, rideDetails, paymentMethod } = useRideStore();
+    const { pickup, dropoff, rideDetails, paymentMethod, setPaymentMethod, handlePayment} = useRideStore();
 
+    const PaymentViaUPI = () => {
+        toast.success("Payment Option : UPI selected!");
+        console.log(rideDetails.price);
+        handlePayment(rideDetails.price);
+        setPaymentMethod("Online");
+    };
+
+    const PaymentViaCash = () => {
+        toast.success("Payment Option : Cash selected!");
+        setPaymentMethod("Cash");
+    }
     if (!assignedDriver || Object.keys(assignedDriver || {}).length === 0) {
         return (
             <video autoPlay playsInline loop className="c-hhrJks h-full" style={{ width: "1024px" }} >
@@ -16,7 +29,7 @@ const DriverDetails = () => {
             </video>
         );
     }
-    
+
 
     return (
         <div className="relative transition hover:scale-[1.02] m-7">
@@ -31,11 +44,11 @@ const DriverDetails = () => {
             {/* Pickup & Dropoff */}
             <div className="mt-4 space-y-3  p-4 rounded-lg shadow-lg">
                 <div className="flex items-center gap-2">
-                    <MapPin color="#0040ff" size = {36} />
+                    <MapPin color="#0040ff" size={36} />
                     <p className="text-lg">{pickup.value}</p>
                 </div>
                 <div className="flex items-center gap-2">
-                    <MapPin color="#ff0000" size = {36} />
+                    <MapPin color="#ff0000" size={36} />
                     <p className="text-lg">{dropoff.value}</p>
                 </div>
             </div>
@@ -93,14 +106,16 @@ const DriverDetails = () => {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex justify-between gap-4 mt-6">
-                <button className="w-1/2 bg-red-500 text-white py-2 rounded-lg text-lg font-medium hover:bg-red-600 transition">
-                    Cancel Ride
+            <div className="flex items-center justify-center gap-4 mt-6">
+                <button className="flex items-center justify-center gap-4 py-2 w-1/2 bg-black text-white rounded-lg text-lg font-medium" onClick={PaymentViaUPI}>
+                    <CreditCard /> Pay via UPI
                 </button>
-                <button className="w-1/2 bg-green-500 text-white py-2 rounded-lg text-lg font-medium hover:bg-green-600 transition">
-                    Track Ride
+                <span>OR</span>
+                <button className="flex items-center justify-center gap-4 py-2 w-1/2 bg-black text-white rounded-lg text-lg font-medium" onClick={PaymentViaCash}>
+                    <CircleDollarSign className="w-5 h-5 mr-2" /> Pay via Cash
                 </button>
             </div>
+
         </div>
     );
 };

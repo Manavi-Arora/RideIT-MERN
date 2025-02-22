@@ -6,6 +6,7 @@ import { useRideStore } from "../../store/useRideStore";
 import RateList from "../user/Ride/RateList";
 import { useDriverStore } from "../../store/useDriverStore";
 import DriverDetails from "./Ride/DriverDetails";
+import toast from "react-hot-toast";
 
 
 
@@ -136,22 +137,20 @@ const MyMap = () => {
     };
   
     if (pickupPosition && dropoffPosition) {
+
       if (driverPosition) {
-        // Calculate distance between driver and pickup
         const driverToPickupDistance = L.latLng(driverPosition).distanceTo(L.latLng(pickupPosition));
-  
-        if (driverToPickupDistance > 50) {
-          // 🚗 Driver has not reached pickup, show route from driver to pickup
-          getRoute(driverPosition, pickupPosition, setRoute);
-        } else {
-          // ✅ Driver has reached pickup, show route from pickup to dropoff
-          getRoute(pickupPosition, dropoffPosition, setRoute);
-        }
+        if (driverToPickupDistance <= 50) {
+            toast.success("🚖 Your driver has arrived at the pickup location!");
+        } 
+        // 🚗 Always show the route from driver to pickup, even if within 50m
+        getRoute(driverPosition, pickupPosition, setRoute);
       } else {
-        // Default: Show route from pickup to dropoff
+        // No driver assigned, show route from pickup to dropoff
         getRoute(pickupPosition, dropoffPosition, setRoute);
       }
     }
+    
   }, [pickupPosition, dropoffPosition, driverPosition]);
   
   useEffect(() => {
@@ -186,20 +185,36 @@ const MyMap = () => {
     }
   }, [pickupPosition, dropoffPosition]);
 
-  const MapUpdater = ({ pickupPosition, dropoffPosition }) => {
+  
+  const MapUpdater = ({ pickupPosition, dropoffPosition, driverPosition }) => {
     const map = useMap();
-
+  
     useEffect(() => {
-      if (pickupPosition && dropoffPosition) {
+      if (driverPosition && pickupPosition) {
+        const driverToPickupDistance = L.latLng(driverPosition).distanceTo(L.latLng(pickupPosition));
+  
+        if (driverToPickupDistance > 50) {
+          // 🚗 Driver is far from pickup → Show both driver & pickup
+          const bounds = L.latLngBounds([pickupPosition, driverPosition]);
+          map.fitBounds(bounds, { padding: [50, 50] });
+        } else {
+          // ✅ Driver is at pickup → Show driver & dropoff
+          const bounds = L.latLngBounds([dropoffPosition, driverPosition]);
+          map.fitBounds(bounds, { padding: [50, 50] });
+        }
+      } else if (pickupPosition && dropoffPosition) {
+        // Default: Show both pickup & dropoff if no driver
         const bounds = L.latLngBounds([pickupPosition, dropoffPosition]);
         map.fitBounds(bounds, { padding: [50, 50] });
       } else if (pickupPosition) {
+        // Focus on pickup if no other positions exist
         map.setView(pickupPosition, 14);
       }
-    }, [pickupPosition, dropoffPosition, map]);
-
+    }, [pickupPosition, dropoffPosition, driverPosition, map]);
+  
     return null;
   };
+  
 
   return (
     <div className="flex w-full h-full">
@@ -237,7 +252,7 @@ const MyMap = () => {
 
           {route.length > 0 && <Polyline positions={route} color="blue" weight={3} opacity={0.8} />}
 
-          <MapUpdater pickupPosition={pickupPosition} dropoffPosition={dropoffPosition} />
+          <MapUpdater pickupPosition={pickupPosition} dropoffPosition={dropoffPosition} driverPosition={driverPosition}/>
         </MapContainer>
       </div>
       {pickupPosition && dropoffPosition && (

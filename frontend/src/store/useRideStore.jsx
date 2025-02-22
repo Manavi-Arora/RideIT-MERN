@@ -15,7 +15,6 @@ export const useRideStore = create((set, get) => ({
     rideDetails : null,
     setRideDetials : (rideDetails) => set({rideDetails}),
     setPickup: (pickup) => set({ pickup }),
-    setPrice: (price) => set({ price }),
     setPaymentMethod: (paymentMethod) => set({ paymentMethod }),
     setShowRateList: (showRateList) => set({ showRateList }),
     setDropoff: (dropoff) => set({ dropoff }),
