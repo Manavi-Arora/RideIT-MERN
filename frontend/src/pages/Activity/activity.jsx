@@ -22,7 +22,7 @@ const Activity = () => {
 
     if (rideHistory.length === 0)
       return (
-        <div className="flex flex-col h-screen items-center justify-center ">
+        <div className="flex flex-col w-screen h-screen ">
         <Header />
          <h2 className="text-green-500 font-extrabold text-2xl">OOPS! No rides yet!</h2>
         <DotLottieReact
@@ -37,9 +37,10 @@ const Activity = () => {
     
 
     return (
-        <div className="max-w-3xl mx-auto p-4">
+        <div className="flex flex-col w-screen h-screen ">
         <Header />
-
+        <div className="max-w-3xl mx-auto p-4">
+        
             <h2 className="text-2xl font-semibold mb-4">Ride History</h2>
             <div className="space-y-4">
                 {rideHistory.map((ride) => (
@@ -57,6 +58,7 @@ const Activity = () => {
                     </div>
                 ))}
             </div>
+        </div>
         </div>
     );
 };

@@ -116,8 +116,8 @@ export const signup = async (req, res) => {
         // Fetch rides associated with the user, populate fields from the User and Driver models if needed
         const rides = await Ride.find({ rider: userId })
             .sort({ pickupTime: -1 })  // Sort by pickup time, newest first
-            .populate("rider", "fullName email phoneNumber profilePic")  // Populate rider's details
-            .populate("driver", "fullName email phoneNumber profilePic")  // Populate driver's details
+            .populate("riderId", "fullName email phoneNumber profilePic")  // Populate rider's details
+            .populate("driverId", "fullName email phoneNumber profilePic")  // Populate driver's details
     
       
         // Respond with the ride history
