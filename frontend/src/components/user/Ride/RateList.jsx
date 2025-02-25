@@ -10,9 +10,9 @@ import { useAuthStore } from "../../../store/useAuthStore";
 const FUEL_PRICE_PER_LITER = 100; // Example fuel price per liter
 
 const RateList = () => {
-  const {findingDriver, fetchDrivers, assignDriver, setFindingDriver,drivers} = useDriverStore();
-  const {setShowSidebar} = useAuthStore(); 
-  const { distance,setShowRateList, setRideDetials} = useRideStore();
+  const {findingDriver, fetchDrivers, assignedDriver, setFindingDriver,drivers,assignDriver} = useDriverStore();
+  const {setShowSidebar,authUser} = useAuthStore(); 
+  const { distance,setShowRateList,bookRide, setRideDetials,pickup,dropoff} = useRideStore();
   const [rides, setRides] = useState([]);
   const [selectedRide, setSelectedRide] = useState(null);
   const [appliedCoupon, setAppliedCoupon] = useState(null);
@@ -36,7 +36,9 @@ const RateList = () => {
       timeAway: selectedRide.timeAway,
       time: selectedRide.time,
       description: selectedRide.description,
+      distance:distance,
     });
+    console.log("distamce is ",distance);
     setShowSidebar(false);
     setFindingDriver(true);
     await fetchDrivers();

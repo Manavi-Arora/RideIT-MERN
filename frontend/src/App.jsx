@@ -1,16 +1,16 @@
 import React from 'react';
 import './index.css'
 import { useEffect,useState } from "react";
-//import Navbar from './components/Navbar';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useAuthStore } from './store/useAuthStore';
+import { Toaster } from "react-hot-toast";
+import LoadingBar from "react-top-loading-bar";
+
 import Home from './pages/home/Home';
 import LogIn from './pages/login/Login';
 import SignUp from './pages/signup/Signup';
 import Front from './pages/front/Front';
-import { useAuthStore } from './store/useAuthStore';
-import { Toaster } from "react-hot-toast";
-import LoadingBar from "react-top-loading-bar";
-//import Front from './pages/front/Front';
+import Activity from './pages/Activity/activity';
 
 
 export default function App() {
@@ -38,6 +38,7 @@ export default function App() {
         <Route path="/user/signup" element={authUser ? <Navigate to='/home'/>:<SignUp setProgress = {setProgress} />} />
         <Route path="/home" element={authUser ? <Home setProgress = {setProgress}  /> : <Navigate to = "/user/login"/> } />
         <Route path="/" element={<Front />} />
+        <Route path="/activity" element={<Activity />} />
         </Routes>
         <Toaster />
       </div>

@@ -119,10 +119,7 @@ export const signup = async (req, res) => {
             .populate("rider", "fullName email phoneNumber profilePic")  // Populate rider's details
             .populate("driver", "fullName email phoneNumber profilePic")  // Populate driver's details
     
-        if (rides.length === 0) {
-            return res.status(404).json({ message: "No ride history found for this user." });
-        }
-    
+      
         // Respond with the ride history
         res.status(200).json({ rides });
         } catch (error) {

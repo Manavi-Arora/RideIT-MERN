@@ -10,6 +10,8 @@ export const useAuthStore = create((set, get) => ({
   isLoggingIn: false,
   isCheckingAuth: true,
   showSidebar : true,
+  rideHistory: [],
+  isFetchingRideHistory: false,
   setShowSidebar : (value) => set({showSidebar : value}),
 
   checkAuth: async () => {
@@ -24,6 +26,21 @@ export const useAuthStore = create((set, get) => ({
       set({ isCheckingAuth: false });
     }
   },
+
+  fetchRideHistory: async () => {
+    set({ isFetchingRideHistory: true });
+
+    try {
+      const res = await axiosInstance.get("/auth/ride-history"); // API call
+      set({ rideHistory: res.data.rides }); // Store ride history in Zustand state
+    } catch (error) {
+      toast.error("Failed to fetch ride history.");
+      console.error("Error fetching ride history:", error);
+    } finally {
+      set({ isFetchingRideHistory: false });
+    }
+  },
+
   signup: async (data) => {
     set({ isSigningUp: true });
     //get().connectSocket();

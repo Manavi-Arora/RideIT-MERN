@@ -1,13 +1,48 @@
-import React from "react";
+import React,{useEffect,useRef} from "react";
 import { useDriverStore } from "../../../store/useDriverStore";
 import { MapPin, CreditCard, Car, Clock, User, BadgeCheck, IndianRupee, CircleDollarSign } from "lucide-react";
 import { useRideStore } from "../../../store/useRideStore";
 import toast from "react-hot-toast";
+import { useAuthStore } from "../../../store/useAuthStore";
 
 const DriverDetails = () => {
     const { assignedDriver } = useDriverStore();
-    const { pickup, dropoff, rideDetails, paymentMethod, setPaymentMethod, handlePayment} = useRideStore();
+    const { pickup, dropoff, rideDetails, paymentMethod, setPaymentMethod, handlePayment,bookRide,} = useRideStore();
+    const {authUser} = useAuthStore();
+ 
+    const rideBooked = useRef(false); // Track if ride has been booked
 
+    const SetRide = async () => {
+      if (!assignedDriver || !rideDetails || rideBooked.current) return;
+      rideBooked.current = true; // Mark as booked to prevent duplicate calls
+  
+      const rideData = {
+        riderId: authUser._id,
+        driverId: assignedDriver._id,
+        rideName: rideDetails.name,
+        startLocation: pickup.value,
+        endLocation: dropoff.value,
+        pickupTime: new Date().toISOString(),
+        fareAmount: rideDetails.price,
+        distance: rideDetails.distance,
+      };
+  
+      console.log("🚖 Ride Data being sent:", rideData);
+  
+      try {
+        await bookRide(rideData);
+      } catch (error) {
+        console.error("Error booking ride:", error);
+        rideBooked.current = false; // Reset in case of failure
+      }
+    };
+  
+    useEffect(() => {
+      if (assignedDriver) {
+        SetRide();
+      }
+    }, [assignedDriver]);
+  
     const PaymentViaUPI = () => {
         toast.success("Payment Option : UPI selected!");
         console.log(rideDetails.price);

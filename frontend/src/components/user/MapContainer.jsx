@@ -11,8 +11,8 @@ import toast from "react-hot-toast";
 
 
 const MyMap = () => {
-  const { pickup, dropoff, userPosition, setUserPosition, setDistance, showRateList, setShowRateList, rideDetails } = useRideStore();
-  const { assignDriver, updateDriverLocation, assignedDriver } = useDriverStore();  
+  const { pickup, dropoff, userPosition, setUserPosition, setDistance, showRateList, setShowRateList, rideDetails, rideStatus, setRideStatus } = useRideStore();
+  const { assignDriver, updateDriverLocation, assignedDriver } = useDriverStore();
   const [pickupPosition, setPickupPosition] = useState(null);
   const [dropoffPosition, setDropoffPosition] = useState(null);
   const [driverPosition, setDriverPosition] = useState(null);  // 🚗 Store driver's live location
@@ -39,7 +39,7 @@ const MyMap = () => {
     default:
       DriverUrl = "location.png"; // Default location icon
   }
-  
+
   // Define icon for pickup, dropoff, and user position
   const blueIcon = new L.Icon({
     iconUrl: 'pick.png',
@@ -47,21 +47,21 @@ const MyMap = () => {
     iconAnchor: [12, 41],
     popupAnchor: [1, -34],
   });
-  
+
   const redIcon = new L.Icon({
     iconUrl: 'dest.png',
     iconSize: [32, 32],
     iconAnchor: [12, 41],
     popupAnchor: [1, -34],
   });
-  
+
   const userIcon = new L.Icon({
     iconUrl: 'location.png',
     iconSize: [32, 32],
     iconAnchor: [12, 41],
     popupAnchor: [1, -34],
   });
-  
+
   // 🚗 Driver Icon with dynamic URL
   const driverIcon = new L.Icon({
     iconUrl: DriverUrl, // Use the dynamically set DriverUrl
@@ -69,7 +69,18 @@ const MyMap = () => {
     iconAnchor: [20, 40],
     popupAnchor: [0, -40],
   });
-  
+
+  useEffect(() => {
+    if (driverPosition && dropoffPosition) {
+      const driverToDropoffDistance = L.latLng(driverPosition).distanceTo(L.latLng(dropoffPosition));
+
+      if (driverToDropoffDistance <= 50) {
+        setRideStatus("completed");
+      }
+    }
+  }, [driverPosition, dropoffPosition]);
+
+
   useEffect(() => {
     if (pickup && pickup.coordinates) {
       setPickupPosition([pickup.coordinates[1], pickup.coordinates[0]]);
@@ -114,10 +125,10 @@ const MyMap = () => {
   }, [assignedDriver]);
   useEffect(() => {
     const getRoute = async (start, end, setRouteCallback) => {
-      const apiKey = "4881edf15f62432dbcd861fdbb4f0983";
+      const apiKey = "88c14444245946ef88d11ca25ecb391f";
       const origin = start.join(",");
       const destination = end.join(",");
-  
+
       try {
         const response = await fetch(
           `https://api.geoapify.com/v1/routing?waypoints=${origin}|${destination}&mode=drive&apiKey=${apiKey}`
@@ -135,14 +146,14 @@ const MyMap = () => {
         console.error("Error fetching route:", error);
       }
     };
-  
+
     if (pickupPosition && dropoffPosition) {
 
       if (driverPosition) {
         const driverToPickupDistance = L.latLng(driverPosition).distanceTo(L.latLng(pickupPosition));
         if (driverToPickupDistance <= 50) {
-            toast.success("🚖 Your driver has arrived at the pickup location!");
-        } 
+          toast.success("🚖 Your driver has arrived at the pickup location!");
+        }
         // 🚗 Always show the route from driver to pickup, even if within 50m
         getRoute(driverPosition, pickupPosition, setRoute);
       } else {
@@ -150,9 +161,9 @@ const MyMap = () => {
         getRoute(pickupPosition, dropoffPosition, setRoute);
       }
     }
-    
+
   }, [pickupPosition, dropoffPosition, driverPosition]);
-  
+
   useEffect(() => {
     if (pickupPosition && dropoffPosition) {
       const getRoute = async () => {
@@ -185,14 +196,14 @@ const MyMap = () => {
     }
   }, [pickupPosition, dropoffPosition]);
 
-  
+
   const MapUpdater = ({ pickupPosition, dropoffPosition, driverPosition }) => {
     const map = useMap();
-  
+
     useEffect(() => {
       if (driverPosition && pickupPosition) {
         const driverToPickupDistance = L.latLng(driverPosition).distanceTo(L.latLng(pickupPosition));
-  
+
         if (driverToPickupDistance > 50) {
           // 🚗 Driver is far from pickup → Show both driver & pickup
           const bounds = L.latLngBounds([pickupPosition, driverPosition]);
@@ -211,57 +222,95 @@ const MyMap = () => {
         map.setView(pickupPosition, 14);
       }
     }, [pickupPosition, dropoffPosition, driverPosition, map]);
-  
+
     return null;
   };
-  
 
   return (
     <div className="flex w-full h-full">
-      <div className={`${pickupPosition && dropoffPosition ? 'w-2/3' : 'w-full'} h-full`}>
-        <MapContainer center={[20.5937, 78.9629]} zoom={5} className="w-full h-full">
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          />
+      {rideStatus === "completed" ? (
+  <div className="w-full h-full flex flex-col items-center justify-center ">
+    
+      
+      {/* 🎥 Video with Controlled Size */}
+      <video
+  playsInline
+  loop
+  autoPlay
+  muted
+  className="w-[450px] rounded-lg pb-2"
+>
+  <source
+    src="https://cdnl.iconscout.com/lottie/premium/preview-watermark/approved-animation-download-in-lottie-json-gif-static-svg-file-formats--successful-confirmed-checkmark-animated-check-marks-pack-sign-symbols-animations-5359645.mp4"
+    type="video/mp4"
+  />
+</video>
 
-          {pickupPosition && pickup?.value !== "" && (
-            <Marker position={pickupPosition} icon={blueIcon}>
-              <Popup>Pickup Location: {pickup?.label}</Popup>
-            </Marker>
+      <h2 className="text-3xl font-extrabold text-green-400 flex items-center gap-2">
+        Ride Completed 🎉
+      </h2>
+      <p className="text-lg text-black mt-2 text-center">
+        Thank you for choosing <span className="text-green-400 font-semibold">RideIT</span>.
+      </p>
+
+      <button
+        className="mt-6 px-6 py-3 bg-green-500 text-black font-bold rounded-lg hover:bg-green-400 transition duration-300"
+        onClick={() => {
+          setRideStatus("inProgress"); // ✅ Correct status update
+          setTimeout(() => window.location.reload(), 100); // ✅ Reload after status update
+        }}
+      >
+        Continue with Ride Booking &gt;
+      </button>
+    </div>
+  
+) : (
+        <>
+          {/* Regular Map Display */}
+          <div className={`${pickupPosition && dropoffPosition ? 'w-2/3' : 'w-full'} h-full`}>
+            <MapContainer center={[20.5937, 78.9629]} zoom={5} className="w-full h-full">
+              <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              />
+
+              {pickupPosition && pickup?.value !== "" && (
+                <Marker position={pickupPosition} icon={blueIcon}>
+                  <Popup>Pickup Location: {pickup?.label}</Popup>
+                </Marker>
+              )}
+
+              {dropoffPosition && dropoff?.value !== "" && (
+                <Marker position={dropoffPosition} icon={redIcon}>
+                  <Popup>Drop-off Location: {dropoff?.label}</Popup>
+                </Marker>
+              )}
+
+              {userPosition && (
+                <Marker position={userPosition} icon={userIcon}>
+                  <Popup>Your Location</Popup>
+                </Marker>
+              )}
+
+              {assignedDriver && driverPosition && (
+                <Marker position={driverPosition} icon={driverIcon}>
+                  <Popup>Driver's Location</Popup>
+                </Marker>
+              )}
+
+              {route.length > 0 && <Polyline positions={route} color="blue" weight={3} opacity={0.8} />}
+
+              <MapUpdater pickupPosition={pickupPosition} dropoffPosition={dropoffPosition} driverPosition={driverPosition} />
+            </MapContainer>
+          </div>
+          {pickupPosition && dropoffPosition && (
+            <div className={`w-1/2 h-[calc(100vh-10vh)] overflow-y-auto bg-white shadow-lg`}>
+              {showRateList ? <RateList /> : <DriverDetails />}
+            </div>
           )}
-
-          {dropoffPosition && dropoff?.value !== "" && (
-            <Marker position={dropoffPosition} icon={redIcon}>
-              <Popup>Drop-off Location: {dropoff?.label}</Popup>
-            </Marker>
-          )}
-
-          {userPosition && (
-            <Marker position={userPosition} icon={userIcon}>
-              <Popup>Your Location</Popup>
-            </Marker>
-          )}
-
-          {/* 🚗 Driver Marker */}
-          {assignedDriver && driverPosition && (
-            <Marker position={driverPosition} icon={driverIcon}>
-              <Popup>Driver's Location</Popup>
-            </Marker>
-          )}
-
-          {route.length > 0 && <Polyline positions={route} color="blue" weight={3} opacity={0.8} />}
-
-          <MapUpdater pickupPosition={pickupPosition} dropoffPosition={dropoffPosition} driverPosition={driverPosition}/>
-        </MapContainer>
-      </div>
-      {pickupPosition && dropoffPosition && (
-        <div className={`w-1/2 h-[calc(100vh-10vh)] overflow-y-auto bg-white shadow-lg`}>
-          {showRateList ? <RateList /> : <DriverDetails />}
-        </div>
+        </>
       )}
     </div>
   );
-};
-
+}
 export default MyMap;

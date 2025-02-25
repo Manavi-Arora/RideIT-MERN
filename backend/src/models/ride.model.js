@@ -1,15 +1,19 @@
 import mongoose from "mongoose";
 
 const rideSchema = new mongoose.Schema({
-    rider: {
+    riderId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User", // Reference to the rider (User model)
       required: true,
     },
-    driver: {
+    driverId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Driver", // Reference to the driver (Driver model)
       required: true,
+    },
+    rideName : {
+      type:String,
+      required :true,
     },
     startLocation: {
       type: String,
@@ -43,14 +47,12 @@ const rideSchema = new mongoose.Schema({
     distance: {
       type: Number, // Distance in kilometers or miles
     },
-    routeDetails: {
-      type: String, // Could be a JSON string with points, or any specific format
-    },
+    
     rating: {
       type: Number,
       min: 1,
       max: 5,
-      default: 0, // Rating after completion
+      default: 1, // Rating after completion
     },
     
 },{ timestamps: true });

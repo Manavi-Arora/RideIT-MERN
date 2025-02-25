@@ -20,12 +20,10 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
-// ✅ Use Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/driver", driverRoutes);
 app.use("/api/ride", rideRoutes);
 
-// ✅ Start Server
 app.listen(PORT, () => {
   console.log(`🚀 Server is running on port ${PORT}`);
   connectDB();

@@ -1,6 +1,7 @@
 import Ride from "../models/ride.model.js";
 import Driver from "../models/driver.model.js";
 import Razorpay from "razorpay";
+import User from "../models/user.model.js";
 
 export const paymentByRazorpay = async (req, res) => {
   try {
@@ -27,11 +28,13 @@ export const paymentByRazorpay = async (req, res) => {
   }
 };
 
+
 export const bookRide = async (req, res) => {
   try {
     const {
       riderId,
       driverId,
+      rideName,
       startLocation,
       endLocation,
       pickupTime,
@@ -43,17 +46,15 @@ export const bookRide = async (req, res) => {
     if (
       !riderId ||
       !driverId ||
+      !rideName ||
       !startLocation ||
       !endLocation ||
       !pickupTime ||
       !fareAmount ||
       !distance
     ) {
-      return res
-        .status(400)
-        .json({ message: "Please provide all required fields." });
+      return res.status(400).json({ message: "Please provide all required fields." });
     }
-
     // Check if the rider exists
     const rider = await User.findById(riderId);
     if (!rider) {
@@ -66,10 +67,13 @@ export const bookRide = async (req, res) => {
       return res.status(404).json({ message: "Driver not found." });
     }
 
+    console.log("Check:", { riderId, driverId });
+
     // Create a new ride
     const newRide = new Ride({
-      rider: riderId,
-      driver: driverId,
+      riderId, // ✅ Correct
+      driverId, // ✅ Correct
+      rideName,
       startLocation,
       endLocation,
       pickupTime,
@@ -81,11 +85,10 @@ export const bookRide = async (req, res) => {
     await newRide.save();
 
     // Return the created ride details
-    res
-      .status(201)
-      .json({ message: "Ride booked successfully", ride: newRide });
+    res.status(201).json({ message: "Ride booked successfully", ride: newRide });
+
   } catch (error) {
-    console.error(error);
+    console.error("Error booking ride:", error);
     res.status(500).json({ message: "Server error while booking ride" });
   }
 };
