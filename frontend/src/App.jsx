@@ -6,8 +6,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Home from './pages/home/Home';
 import LogIn from './pages/login/Login';
 import SignUp from './pages/signup/Signup';
-// import Settings from './pages/settings/Settings';
-// import Profile from './pages/profile/Profile';
+import Front from './pages/front/Front';
 import { useAuthStore } from './store/useAuthStore';
 import { Toaster } from "react-hot-toast";
 import LoadingBar from "react-top-loading-bar";
@@ -35,9 +34,10 @@ export default function App() {
         {/* <Navbar /> */}
         <Routes>
           
-        <Route path="/login" element={authUser ? <Navigate to = '/home'/> : <LogIn setProgress = {setProgress} />} />
-        <Route path="/signup" element={authUser ? <Navigate to='/home'/>:<SignUp setProgress = {setProgress} />} />
-        <Route path="/home" element={authUser ? <Home setProgress = {setProgress}  /> : <Navigate to = "/login"/> } />
+        <Route path="/user/login" element={authUser ? <Navigate to = '/home'/> : <LogIn setProgress = {setProgress} />} />
+        <Route path="/user/signup" element={authUser ? <Navigate to='/home'/>:<SignUp setProgress = {setProgress} />} />
+        <Route path="/home" element={authUser ? <Home setProgress = {setProgress}  /> : <Navigate to = "/user/login"/> } />
+        <Route path="/" element={<Front />} />
         </Routes>
         <Toaster />
       </div>

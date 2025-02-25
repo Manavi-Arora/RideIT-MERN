@@ -166,7 +166,7 @@ const SignUp = (props) => {
             </div>
           </form>
           <div className="mt-4 text-sm text-gray-600 text-center">
-            <p>Already have an account? <Link to="/login" className="text-black hover:underline">Login here</Link>
+            <p>Already have an account? <Link to="/user/login" className="text-black hover:underline">Login here</Link>
             </p>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import RideRequestForm from "./RideRequestForm";
+import RideRequestForm from "./Ride/RideRequestForm";
 
 
 const Sidebar = () => {

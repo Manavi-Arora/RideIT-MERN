@@ -114,7 +114,7 @@ const LogIn = (props) => {
                         </div>
                     </form>
                     <div className="mt-4 text-sm text-gray-600 text-center">
-                        <p>Don't have an account? <Link to="/signup" className="text-black hover:underline">Create Account</Link>
+                        <p>Don't have an account? <Link to="/user/signup" className="text-black hover:underline">Create Account</Link>
                         </p>
                     </div>
                 </div>
