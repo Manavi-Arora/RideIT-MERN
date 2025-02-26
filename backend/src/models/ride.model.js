@@ -47,7 +47,9 @@ const rideSchema = new mongoose.Schema({
     distance: {
       type: Number, // Distance in kilometers or miles
     },
-    
+    mapScreenShot : {
+      type : String,
+    },
     rating: {
       type: Number,
       min: 1,

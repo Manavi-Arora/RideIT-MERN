@@ -12,6 +12,7 @@
   "dependencies": {
     "@lottiefiles/dotlottie-react": "^0.13.0",
     "axios": "^1.7.9",
+    "html2canvas": "^1.4.1",
     "lucide-react": "^0.475.0",
     "razorpay": "^2.9.5",
     "react": "^19.0.0",

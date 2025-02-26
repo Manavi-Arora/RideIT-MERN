@@ -6,7 +6,7 @@ const Header = () => {
   const { logout, authUser } = useAuthStore();
 
   return (
-    <header className="bg-black text-white flex justify-between items-center px-6 py-3.5 w-screen">
+    <header className="bg-black text-white flex justify-between items-center px-6 py-3.5 w-full sticky top-0">
       <h1 className="text-xl font-semibold">RideIT</h1>
       <div className="flex space-x-6 items-center">
 

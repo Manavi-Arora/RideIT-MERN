@@ -7,7 +7,7 @@ import { useAuthStore } from "../../../store/useAuthStore";
 
 const DriverDetails = () => {
     const { assignedDriver } = useDriverStore();
-    const { pickup, dropoff, rideDetails, paymentMethod, setPaymentMethod, handlePayment,bookRide,} = useRideStore();
+    const { pickup, dropoff, rideDetails, paymentMethod, setPaymentMethod, handlePayment,bookRide,screenshotURL} = useRideStore();
     const {authUser} = useAuthStore();
  
     const rideBooked = useRef(false); // Track if ride has been booked
@@ -20,6 +20,7 @@ const DriverDetails = () => {
         riderId: authUser._id,
         driverId: assignedDriver._id,
         rideName: rideDetails.name,
+        mapScreenShot : screenshotURL,
         startLocation: pickup.value,
         endLocation: dropoff.value,
         pickupTime: new Date().toISOString(),

@@ -1,22 +1,23 @@
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef} from "react";
 import { useRideStore } from "../../store/useRideStore";
 import RateList from "../user/Ride/RateList";
 import { useDriverStore } from "../../store/useDriverStore";
 import DriverDetails from "./Ride/DriverDetails";
 import toast from "react-hot-toast";
-
+import html2canvas from "html2canvas";
 
 
 const MyMap = () => {
-  const { pickup, dropoff, userPosition, setUserPosition, setDistance, showRateList, setShowRateList, rideDetails, rideStatus, setRideStatus } = useRideStore();
+  const { pickup, dropoff, userPosition, setUserPosition, setDistance, showRateList, setShowRateList, rideDetails, rideStatus, setRideStatus,screenshotURL, setScreenshotURL } = useRideStore();
   const { assignDriver, updateDriverLocation, assignedDriver } = useDriverStore();
   const [pickupPosition, setPickupPosition] = useState(null);
   const [dropoffPosition, setDropoffPosition] = useState(null);
   const [driverPosition, setDriverPosition] = useState(null);  // 🚗 Store driver's live location
   const [route, setRoute] = useState([]);
+  const mapRef = useRef(null);
   let DriverUrl = "";
   //console.log(rideDetails);
   // Determine the driver icon URL based on the ride type
@@ -69,6 +70,37 @@ const MyMap = () => {
     iconAnchor: [20, 40],
     popupAnchor: [0, -40],
   });
+  useEffect(() => {
+    const captureMap = async () => {
+      if (mapRef.current && pickupPosition && dropoffPosition) {
+        const map = mapRef.current; // Get the map instance
+        const mapContainer = document.querySelector(".leaflet-container"); // ✅ Get correct container
+  
+        if (!mapContainer) return; // Prevent null issues
+  
+        // 🚀 Ensure the map fully renders before capturing
+        await new Promise((resolve) => setTimeout(resolve, 2000)); 
+  
+        try {
+          const canvas = await html2canvas(mapContainer, {
+            useCORS: true,
+            logging: false, // Reduce console clutter
+            allowTaint: true, // Allow cross-origin images (if any)
+            scale: window.devicePixelRatio, // Improve quality
+          });
+  
+          const imageURL = canvas.toDataURL("image/png");
+          setScreenshotURL(imageURL);
+          console.log("📸 Screenshot captured successfully!");
+        } catch (error) {
+          console.error("❌ Screenshot capture error:", error);
+        }
+      }
+    };
+  
+    captureMap();
+  }, [pickupPosition, dropoffPosition]);  
+  
 
   useEffect(() => {
     if (driverPosition && dropoffPosition) {
@@ -267,7 +299,7 @@ const MyMap = () => {
 ) : (
         <>
           {/* Regular Map Display */}
-          <div className={`${pickupPosition && dropoffPosition ? 'w-2/3' : 'w-full'} h-full`}>
+          <div  ref={mapRef} className={`${pickupPosition && dropoffPosition ? 'w-2/3' : 'w-full'} h-full`}>
             <MapContainer center={[20.5937, 78.9629]} zoom={5} className="w-full h-full">
               <TileLayer
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

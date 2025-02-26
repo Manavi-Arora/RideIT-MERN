@@ -30,7 +30,7 @@ export default function App() {
           progress={progress}
           onLoaderFinished={() => setProgress(0)}
         />
-      <div className='flex items-center justify-center overflow-auto'>
+      <div className='flex items-center justify-center overflow-y-auto'>
         {/* <Navbar /> */}
         <Routes>
           

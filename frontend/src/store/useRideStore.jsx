@@ -14,6 +14,8 @@ export const useRideStore = create((set, get) => ({
     paymentMethod: null,
     rideDetails: null,
     rideStatus: "in Progress",
+    screenshotURL : null,
+    setScreenshotURL : (screenshotURL) => set({ screenshotURL }),
     setRideDetials: (rideDetails) => set({ rideDetails }),
     setRideStatus: (rideStatus) => set({ rideStatus }),
     setPickup: (pickup) => set({ pickup }),

@@ -35,6 +35,7 @@ export const bookRide = async (req, res) => {
       riderId,
       driverId,
       rideName,
+      mapScreenShot,
       startLocation,
       endLocation,
       pickupTime,
@@ -47,6 +48,7 @@ export const bookRide = async (req, res) => {
       !riderId ||
       !driverId ||
       !rideName ||
+      !mapScreenShot ||
       !startLocation ||
       !endLocation ||
       !pickupTime ||
@@ -74,6 +76,7 @@ export const bookRide = async (req, res) => {
       riderId, // ✅ Correct
       driverId, // ✅ Correct
       rideName,
+      mapScreenShot,
       startLocation,
       endLocation,
       pickupTime,
