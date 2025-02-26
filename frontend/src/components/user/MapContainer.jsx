@@ -70,36 +70,21 @@ const MyMap = () => {
     iconAnchor: [20, 40],
     popupAnchor: [0, -40],
   });
+
   useEffect(() => {
     const captureMap = async () => {
       if (mapRef.current && pickupPosition && dropoffPosition) {
-        const map = mapRef.current; // Get the map instance
-        const mapContainer = document.querySelector(".leaflet-container"); // ✅ Get correct container
-  
-        if (!mapContainer) return; // Prevent null issues
-  
-        // 🚀 Ensure the map fully renders before capturing
-        await new Promise((resolve) => setTimeout(resolve, 2000)); 
-  
-        try {
-          const canvas = await html2canvas(mapContainer, {
-            useCORS: true,
-            logging: false, // Reduce console clutter
-            allowTaint: true, // Allow cross-origin images (if any)
-            scale: window.devicePixelRatio, // Improve quality
-          });
-  
+        setTimeout(async () => {
+          const canvas = await html2canvas(mapRef.current, { useCORS: true });
           const imageURL = canvas.toDataURL("image/png");
           setScreenshotURL(imageURL);
-          console.log("📸 Screenshot captured successfully!");
-        } catch (error) {
-          console.error("❌ Screenshot capture error:", error);
-        }
+          console.log("Screenshot captured:", imageURL);
+        }, 3000); // Wait for the map to adjust
       }
     };
-  
+
     captureMap();
-  }, [pickupPosition, dropoffPosition]);  
+  }, [pickupPosition, dropoffPosition]);
   
 
   useEffect(() => {

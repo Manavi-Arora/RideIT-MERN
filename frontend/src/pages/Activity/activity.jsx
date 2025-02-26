@@ -18,7 +18,7 @@ const Activity = () => {
 
     if (isFetchingRideHistory)
         return (
-            <div className="flex flex-col w-screen h-screen ">
+            <div className="flex flex-col w-screen h-screen items-center">
                 <Header />
                 <Loader2 className="animate-spin w-6 h-6 text-gray-600" />
             </div>
@@ -26,7 +26,7 @@ const Activity = () => {
 
     if (rideHistory.length === 0)
         return (
-            <div className="flex flex-col w-screen h-screen ">
+            <div className="flex flex-col w-screen h-screen items-center justify-center">
                 <Header />
                 <h2 className="text-green-500 font-extrabold text-2xl">OOPS! No rides yet!</h2>
                 <DotLottieReact
@@ -82,23 +82,23 @@ const Activity = () => {
                                     <span className="text-green-600 font-bold bg-green-100 px-3 py-1 rounded-md">Payment ₹{ride.fareAmount}</span>
                                     <span className="text-gray-500">Distance {ride.distance}Km</span>
                                     {showImage && ride.mapScreenShot && (
-        <div 
-          className="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-90 flex items-center justify-center z-50"
-          onClick={showImg} // Close when clicking outside
-        >
-          <img 
-            src={ride.mapScreenShot} 
-            alt="Ride Map Screenshot" 
-            className="max-w-full max-h-full rounded-lg shadow-lg"
-          />
-          <button 
-            onClick={showImg} 
-            className="absolute top-4 right-4 bg-red-500 flex items-center justify-center text-white p-2 rounded-full text-lg hover:bg-red-600 transition w-8 h-8"
-          >
-            ✕
-          </button>
-        </div>
-      )}
+                                        <div
+                                            className="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-90 flex items-center justify-center z-50"
+                                            onClick={showImg} // Close when clicking outside
+                                        >
+                                            <img
+                                                src={ride.mapScreenShot}
+                                                alt="Ride Map Screenshot"
+                                                className="max-w-full max-h-full rounded-lg shadow-lg"
+                                            />
+                                            <button
+                                                onClick={showImg}
+                                                className="absolute top-4 right-4 bg-black flex items-center justify-center text-white p-2 rounded-full text-lg hover:bg-gray-600 transition w-8 h-8"
+                                            >
+                                                ✕
+                                            </button>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
