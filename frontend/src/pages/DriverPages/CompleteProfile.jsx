@@ -3,7 +3,7 @@ import { UploadCloud } from "lucide-react";
 import { useDriverStore } from "../../store/useDriverStore";
 import toast from "react-hot-toast";
 
-const CompleteProfile = () => {
+const CompleteProfile = (props) => {
   const { completeProfile } = useDriverStore();
   const [selectedVehicle, setSelectedVehicle] = useState(null);
   const [step, setStep] = useState(1);
@@ -34,18 +34,21 @@ const CompleteProfile = () => {
   
 
   const handleSubmit = async (e) => {
+    props.setProgress(20);
     e.preventDefault();
 
     try {
+      props.setProgress(40);
       const formDataToSend = new FormData();
       formDataToSend.append("profilePic", formData.profilePic);
-      console.log(formData.profilePic);
+      //console.log(formData.profilePic);
       formDataToSend.append("vehicleType", selectedVehicle);
       formDataToSend.append("vehicleModel", formData.vehicleModel);
       formDataToSend.append("vehicleNumber", formData.vehicleNumber);
       formDataToSend.append("licenseNumber", formData.licenseNumber);
-
+      props.setProgress(70);
       await completeProfile(formDataToSend);
+      props.setProgress(100);
       toast.success("Profile updated successfully!");
     } catch (error) {
       toast.error("Profile update failed. Please try again.");
