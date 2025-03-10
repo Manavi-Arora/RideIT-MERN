@@ -22,10 +22,17 @@ export const protectRoute = async (req, res, next) => {
     }
 
     req.user = user;
-
+    req.userId = user.id;  
     next();
   } catch (error) {
     console.log("Error in protectRoute middleware: ", error.message);
     res.status(500).json({ message: "Internal server error" });
   }
+};
+export const checkProfileCompletion = async (req, res, next) => {
+  const driver = await Driver.findById(req.user.id);
+  if (!driver.profileCompleted) {
+      return res.status(403).json({ message: "Please complete your profile to proceed." });
+  }
+  next();
 };

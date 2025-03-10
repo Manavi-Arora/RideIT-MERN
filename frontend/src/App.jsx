@@ -13,6 +13,10 @@ import Front from './pages/front/Front';
 import Activity from './pages/Activity/activity';
 
 
+import DriverLogin from './pages/DriverPages/DriverLogin';
+import DriverSignUp from './pages/DriverPages/DriverSignUp';
+import CompleteProfile from './pages/DriverPages/CompleteProfile';
+
 export default function App() {
   const {authUser,checkAuth} = useAuthStore();
   const [progress, setProgress] = useState(0);
@@ -38,7 +42,10 @@ export default function App() {
         <Route path="/user/signup" element={authUser ? <Navigate to='/home'/>:<SignUp setProgress = {setProgress} />} />
         <Route path="/home" element={authUser ? <Home setProgress = {setProgress}  /> : <Navigate to = "/user/login"/> } />
         <Route path="/" element={<Front />} />
-        <Route path="/activity" element={<Activity />} />
+        <Route path="/signup/captain" element={<DriverSignUp setProgress = {setProgress} />} />
+        <Route path="/driver/complete-profile" element={<CompleteProfile />} />
+        <Route path="/login/captain" element={<DriverLogin setProgress = {setProgress} />} />
+        <Route path="/activity" element={authUser ? <Activity /> : <Navigate to = '/home'/> } />
         </Routes>
         <Toaster />
       </div>

@@ -4,10 +4,65 @@ import toast from "react-hot-toast";
 import { useRideStore } from "./useRideStore";
 
 export const useDriverStore = create((set, get) => ({
-    drivers: [], 
-    assignedDriver: null, 
+    authDriver: null,
+    isSigningUp: false,
+    isLoggingIn: false,
+    drivers: [],
+    assignedDriver: null,
     findingDriver: false,
+    isUpdatingProfile : false,
     setFindingDriver: (findingDriver) => set({ findingDriver }),
+
+    checkAuth: async () => {
+        try {
+            const res = await axiosInstance.get("/driver/check");
+            set({ authDriver: res.data });
+            //get().connectSocket();
+        } catch (error) {
+            console.log("Error in checkAuth", error.message);
+            set({ authDriver: null });
+        } finally {
+            set({ isCheckingAuth: false });
+        }
+    },
+    signup: async (data) => {
+        set({ isSigningUp: true });
+        //get().connectSocket();
+        try {
+            const res = await axiosInstance.post("/driver/signup", data);
+            set({ authDriver: res.data });
+            toast.success("Account created successfully");
+            return res.data; 
+        } catch (error) {
+            toast.error(error.response?.data?.message);
+        } finally {
+            set({ isSigningUp: false });
+        }
+    },
+
+    login: async (data) => {
+        set({ isLoggingIn: true });
+        //get().connectSocket();
+        try {
+            const res = await axiosInstance.post("/driver/login", data);
+            set({ authDriver: res.data });
+            toast.success("Logged in successfully");
+        } catch (error) {
+            toast.error(error.response.data.message);
+        } finally {
+            set({ isLoggingIn: false });
+        }
+    },
+    logout: async () => {
+        try {
+            await axiosInstance.post("/driver/logout");
+            set({ authDriver: null });
+            //get().disconnectSocket();
+            toast.success("Logged out successfully");
+        } catch (error) {
+            toast.error(error.response?.data.message);
+        }
+    },
 
     fetchDrivers: async () => {
         try {
@@ -68,4 +123,24 @@ export const useDriverStore = create((set, get) => ({
             toast.error("Failed to update driver location.");
         }
     },
+
+    completeProfile: async (data) => {
+        set({ isUpdatingProfile: true });
+    
+        try {
+            const res = await axiosInstance.post("/driver/complete-profile", data, {
+                withCredentials: true, // Ensure cookies are sent if using JWT in cookies
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+    
+            set({ authDriver: res.data.driver, profileCompleted: true });
+
+        } catch (error) {
+            toast.error(error.response?.data?.message || "Profile update failed");
+        } finally {
+            set({ isUpdatingProfile: false });
+        }
+    }    
 }));

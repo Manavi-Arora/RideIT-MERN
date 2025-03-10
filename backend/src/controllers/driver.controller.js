@@ -1,7 +1,7 @@
 import { generateToken } from "../lib/utils.js";
 import Driver from "../models/driver.model.js";
 import bcrypt from "bcryptjs";
-
+import cloudinary from "../lib/cloudinary.js";
 
 export const checkAuth = (req, res) => {
     try {
@@ -69,6 +69,7 @@ export const signup = async (req, res) => {
   };
   
   export const login = async (req, res) => {
+    console.log(req);
     const { email, password } = req.body;
     try {
       const user = await Driver.findOne({ email });
@@ -137,3 +138,67 @@ export const signup = async (req, res) => {
         res.status(500).json({ message: "Internal Server Error" });
     }
 };
+export const completeProfile = async (req, res) => {
+  try {
+    const driverId = req.userId;
+    const { licenseNumber, vehicleType, vehicleModel, vehicleNumber, profilePic } = req.body;
+
+    console.log("Driver ID:", driverId);
+    console.log("Received Data:", licenseNumber);
+
+    if (!licenseNumber || !vehicleType || !vehicleModel || !vehicleNumber || !profilePic) {
+      return res.status(400).json({ message: "All fields are required!" });
+    }
+
+    // Upload Base64 image to Cloudinary
+    const uploadResponse = await cloudinary.uploader.upload(profilePic, {
+      folder: "driver_profiles",
+    });
+
+    if (!uploadResponse.secure_url) {
+      return res.status(500).json({ message: "Image upload failed!" });
+    }
+
+    // Update driver profile
+    const updatedDriver = await Driver.findByIdAndUpdate(
+      driverId,
+      {
+        licenseNumber,
+        vehicleType,
+        vehicleModel,
+        vehicleNumber,
+        profilePic: uploadResponse.secure_url,
+        profileCompleted: true,
+      },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedDriver) {
+      return res.status(404).json({ message: "Driver not found" });
+    }
+
+    res.status(200).json({ message: "Profile completed successfully", driver: updatedDriver });
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
+export const driverDashboard = async (req, res) => {
+  try {
+      const driver = await Driver.findById(req.user.id).select("-password"); // Exclude password
+
+      if (!driver) {
+          return res.status(404).json({ message: "Driver not found" });
+      }
+
+      res.status(200).json({
+          message: "Driver dashboard data retrieved successfully",
+          driver
+      });
+  } catch (error) {
+      res.status(500).json({ message: "Server error", error });
+  }
+};
+

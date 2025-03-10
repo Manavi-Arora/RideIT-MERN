@@ -89,7 +89,7 @@ const Activity = () => {
                                             <img
                                                 src={ride.mapScreenShot}
                                                 alt="Ride Map Screenshot"
-                                                className="max-w-full max-h-full rounded-lg shadow-lg"
+                                                className="max-w-full h-5/6 rounded-lg shadow-lg"
                                             />
                                             <button
                                                 onClick={showImg}

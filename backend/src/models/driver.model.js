@@ -22,21 +22,23 @@ const driverSchema = new mongoose.Schema({
     },
     licenseNumber: {
       type: String,
-      required: true,
+      // required: true,
       unique: true,
+      sparse : true,
     },
     vehicleType: {
       type: String,
-      required: true,
+      // required: true,
     },
     vehicleModel: {
       type: String,
-      required: true,
+      // required: true,
     },
     vehicleNumber: {
       type: String,
-      required: true,
+      // required: true,
       unique: true,
+      sparse : true,
     },
     profilePic: {
       type: String,
@@ -53,7 +55,8 @@ const driverSchema = new mongoose.Schema({
     location: { 
       type: { type: String, default: "Point" }, 
       coordinates: { type: [Number], default: [0, 0] }  // [longitude, latitude]
-    }
+    },
+    profileCompleted: { type: Boolean, default: false }
 },{ timestamps: true });
 
 driverSchema.index({ location: "2dsphere" }); // Index for geospatial queries
