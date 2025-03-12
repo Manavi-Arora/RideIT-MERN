@@ -2,9 +2,9 @@ import React, { useEffect, useState } from 'react'
 import Scene from "../../lib/Scene"
 import { useDriverStore } from '../../store/useDriverStore'
 import { useRideStore } from '../../store/useRideStore';
-
+import { Link } from "react-router-dom";
 const Dashboard = () => {
-  const { authDriver, driverRideHistory, fetchDriverRideHistory, checkAuth } = useDriverStore();
+  const { authDriver, driverRideHistory, fetchDriverRideHistory, checkAuthDriver,logout } = useDriverStore();
 
   const getDayName = (date) => {
     const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -12,19 +12,20 @@ const Dashboard = () => {
   }
   useEffect(() => {
     fetchDriverRideHistory();
-    checkAuth();
+    checkAuthDriver();
   }, []);
 
-  useEffect(() => {
-    console.log("Updated driver ride history:", driverRideHistory);
-  }, [driverRideHistory]); // Logs only when state updates
-
+  
   let totalfares = 0
 
   driverRideHistory?.forEach((ride) => {
     totalfares += ride.fareAmount;
   });
-  totalfares = totalfares.toFixed(2)
+  totalfares = totalfares.toFixed(2);
+
+  const DriverLogout = ()=>{
+    logout();
+  }
 
   const vehicleUrl = 
   authDriver?.vehicleType === "Car" ? "https://d1a3f4spazzrp4.cloudfront.net/car-types/haloProductImages/Hatchback.png" :
@@ -77,36 +78,28 @@ const Dashboard = () => {
             </a>
           </li>
           <li class="mb-1 group">
-            <a href="/dashboard" class="flex font-semibold items-center py-2 px-4 text-gray-900 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100 sidebar-dropdown-toggle">
+            <Link to="/dashboard" class="flex font-semibold items-center py-2 px-4 text-gray-900 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100 sidebar-dropdown-toggle">
 
               <span class="text-sm">Cabs</span>
-            </a>
+            </Link>
           </li>
           <li class="mb-1 group">
-            <a href="/rides" class="flex font-semibold items-center py-2 px-4 text-gray-900 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
+            <Link to="/driver-rides" class="flex font-semibold items-center py-2 px-4 text-gray-900 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
 
               <span class="text-sm">Rides</span>
-            </a>
+            </Link>
           </li>
           <span class="text-gray-400 font-bold">PERSONAL</span>
           <li class="mb-1 group">
-            <a href="/driverprofile" class="flex font-semibold items-center py-2 px-4 text-gray-900 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
+            <Link to="/driver-profile" class="flex font-semibold items-center py-2 px-4 text-gray-900 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
 
               <span class="text-sm">Profile</span>
-            </a>
+            </Link>
           </li>
-          <li class="mb-1 group">
-            <p class="flex font-semibold items-center py-2 px-4 text-gray-900 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
-
-              <span class="text-sm">Notifications</span>
-              <span class=" md:block px-2 py-0.5 ml-auto text-xs font-medium tracking-wide text-red-600 bg-red-200 rounded-full">5</span>
-            </p>
-          </li>
-          <li class="mb-1 group">
-            <p class="flex font-semibold items-center py-2 px-4 text-gray-900 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
-
-              <span class="text-sm">Messages</span>
-              <span class=" md:block px-2 py-0.5 ml-auto text-xs font-medium tracking-wide text-green-600 bg-green-200 rounded-full">2 New</span>
+         
+          <li class="mb-1 group" onClick={DriverLogout}>
+            <p class="flex cursor-pointer font-semibold items-center py-2 px-4 text-gray-900 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
+              <span class="text-sm">Logout</span>
             </p>
           </li>
           <span class="text-gray-400 font-bold">TERMS AND CONDITIONS</span>
@@ -152,12 +145,12 @@ const Dashboard = () => {
                 {authDriver && <dialog id="my_modal_3" className="modal">
                   <div className="modal-box bg-white h-[calc(80vh)] w-[calc(90vw)] overflow-y-hidden">
                     <form method="dialog">
-                      <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
+                      <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2 outline-none">✕</button>
                     </form>
-                    <div className="shadow-xl  rounded-2xl flex p-4 gap-3">
+                    <div className="shadow-xl flex p-4 gap-3">
                       <div className='flex-col w-full my-auto'>
                         <p className='text-md font-semibold text-gray-950'>Vehicle Model : {authDriver?.vehicleModel}</p>
-                        <p className='text-sm font-medium text-gray-950'>Vehicle Number : {authDriver?.vehicleNumber}</p>
+                        <p className='text-md font-semibold text-gray-950'>Vehicle Number : {authDriver?.vehicleNumber}</p>
                       </div>
 
                       <div className='flex flex-col'>
@@ -399,12 +392,12 @@ const Dashboard = () => {
               <section className="bg-white shadow-lg p-6 rounded-md mb-8">
                 <h2 className="text-2xl font-semibold text-gray-800 mb-4">Terms and Conditions</h2>
                 <p className="text-gray-600 mb-2">
-                  Welcome to <strong>ZappCab</strong>! By using our mobile application and services, you agree to comply with and be bound by these Terms and Conditions. Please read these terms carefully before booking a ride through our platform. If you do not agree to these terms, please do not use our services.
+                  Welcome to <strong>RideIT</strong>! By using our mobile application and services, you agree to comply with and be bound by these Terms and Conditions. Please read these terms carefully before booking a ride through our platform. If you do not agree to these terms, please do not use our services.
                 </p>
                 <ul className=" pl-6 text-gray-600">
-                  <li><strong>1. Services: </strong> ZappCab provides a platform that connects passengers with drivers for transportation services. ZappCab is not a transportation provider, but acts as an intermediary between passengers and drivers.</li>
+                  <li><strong>1. Services: </strong> RideIT provides a platform that connects passengers with drivers for transportation services. RideIT is not a transportation provider, but acts as an intermediary between passengers and drivers.</li>
                   <li><strong>2. Eligibility: </strong>
-                    To use the ZappCab service, you must:
+                    To use the RideIT service, you must:
                     <ol className='list-disc list-inside pl-6'>
                       <li>Be at least 18 years old.</li>
                       <li>Have a valid payment method.</li>
@@ -413,7 +406,7 @@ const Dashboard = () => {
                   </li>
                   <li><strong>3. Account Registration:</strong>
                     <ol className='list-disc list-inside pl-6'>
-                      <li>You are required to create an account with ZappCab to book rides. You agree to provide accurate and complete information when registering.</li>
+                      <li>You are required to create an account with RideIT to book rides. You agree to provide accurate and complete information when registering.</li>
                       <li>You are responsible for maintaining the confidentiality of your account and password.</li>
                       <li>You agree to notify us immediately if you suspect any unauthorized use of your account.</li>
                     </ol>
@@ -422,20 +415,20 @@ const Dashboard = () => {
                     <ol className='list-disc list-inside pl-6'>
                       <li>By booking a ride, you agree to pay the fare for the service provided, including applicable taxes, surcharges, and tips.</li>
                       <li>Payment will be processed through the payment method associated with your account.</li>
-                      <li>Refunds are subject to the ZappCab refund policy, which may vary depending on the circumstances.</li>
+                      <li>Refunds are subject to the RideIT refund policy, which may vary depending on the circumstances.</li>
                     </ol></li>
                   <li>
                     <strong>5. Ride cancellation</strong>
                     <ol className='pl-6 list-disc list-inside'>
                       <li>You can cancel a ride before the driver arrives, but you may be charged a cancellation fee depending on how far the driver has traveled.</li>
 
-                      <li>ZappCab reserves the right to cancel a ride at any time in cases of technical issues, emergencies, or breaches of our Terms and Conditions.</li>
+                      <li>RideIT reserves the right to cancel a ride at any time in cases of technical issues, emergencies, or breaches of our Terms and Conditions.</li>
                     </ol>
                   </li>
                   <li>
                     <strong>6. Driver Behaviour</strong>
                     <ol className='pl-6 list-inside list-disc'>
-                      <li>ZappCab drivers are required to follow all applicable laws and regulations and provide a safe and professional experience for passengers.</li>
+                      <li>RideIT drivers are required to follow all applicable laws and regulations and provide a safe and professional experience for passengers.</li>
 
                       <li className='list-disc list-inside'>
                         If you have any concerns or complaints about a driver’s behavior, please report it through the app.</li>
@@ -446,17 +439,17 @@ const Dashboard = () => {
                     <ol className='list-disc list-inside pl-6'>
                       <li>Passengers are expected to behave respectfully during the ride. Abuse, harassment, or dangerous behavior will not be tolerated.</li>
 
-                      <li>ZappCab reserves the right to suspend or terminate accounts for inappropriate behavior.</li></ol>
+                      <li>RideIT reserves the right to suspend or terminate accounts for inappropriate behavior.</li></ol>
                   </li>
                   <li>
                     <strong>8. Limitation Liability</strong>
                     <ol className='list-disc list-inside pl-6'>
-                      <li>ZappCab will not be held liable for any damages, injuries, or losses incurred during the ride, including those resulting from delays, accidents, or actions of drivers.</li>
+                      <li>RideIT will not be held liable for any damages, injuries, or losses incurred during the ride, including those resulting from delays, accidents, or actions of drivers.</li>
 
-                      <li>ZappCab’s liability is limited to the fare paid for the ride.</li></ol>
+                      <li>RideIT’s liability is limited to the fare paid for the ride.</li></ol>
                   </li>
                   <li><strong>9. Privacy Policy:</strong> Your privacy is important to us. Please refer to our Privacy Policy to understand how we collect, use, and protect your personal data.</li>
-                  <li><strong>10. Modification of Terms:</strong> ZappCab reserves the right to modify these Terms and Conditions at any time. Changes will be effective when posted in the app or on our website. Continued use of the service after changes have been posted constitutes acceptance of those changes.</li>
+                  <li><strong>10. Modification of Terms:</strong> RideIT reserves the right to modify these Terms and Conditions at any time. Changes will be effective when posted in the app or on our website. Continued use of the service after changes have been posted constitutes acceptance of those changes.</li>
                 </ul>
               </section>
               <section className="bg-white shadow-lg p-6 rounded-md mb-8">
@@ -464,8 +457,8 @@ const Dashboard = () => {
 
                 <div className="space-y-4">
                   <div>
-                    <h3 className="text-lg font-medium text-gray-700">1. How do I book a ride with ZappCab?</h3>
-                    <p className="text-gray-600">To book a ride, simply open the ZappCab app, enter your pick-up and drop-off locations, and select your ride type. You’ll see the estimated fare and expected arrival time for your driver. Once you're ready, tap "Book Ride" to confirm your ride.</p>
+                    <h3 className="text-lg font-medium text-gray-700">1. How do I book a ride with RideIT?</h3>
+                    <p className="text-gray-600">To book a ride, simply open the RideIT app, enter your pick-up and drop-off locations, and select your ride type. You’ll see the estimated fare and expected arrival time for your driver. Once you're ready, tap "Book Ride" to confirm your ride.</p>
                   </div>
 
                   <div>
@@ -485,7 +478,7 @@ const Dashboard = () => {
                   </div>
                   <div>
                     <h3 className="text-lg font-medium text-gray-700">4. What payment methods are accepted?</h3>
-                    <p className="text-gray-600">ZappCab accepts the following payment methods:
+                    <p className="text-gray-600">RideIT accepts the following payment methods:
                       <ol className='list-disc list-inside pl-6'>
                         <li>Credit or debit cards (Visa, MasterCard, etc.)</li>
                         <li>Digital wallets (e.g., PayPal, Apple Pay, Google Pay)</li>
@@ -500,7 +493,7 @@ const Dashboard = () => {
                   </div>
 
                   <div>
-                    <h3 className="text-lg font-medium text-gray-700">6. Is ZappCab safe?</h3>
+                    <h3 className="text-lg font-medium text-gray-700">6. Is RideIT safe?</h3>
                     <p className="text-gray-600">Yes, passenger safety is a top priority for us. Our drivers undergo background checks, and vehicles are regularly inspected. Additionally, you can share your ride details with a friend or family member for extra peace of mind. The app also has an in-app emergency button to contact local authorities in case of an emergency.</p>
                   </div>
 
@@ -510,7 +503,7 @@ const Dashboard = () => {
                   </div>
                   <div>
                     <h3 className="text-lg font-medium text-gray-700">8. What happens if my driver takes a wrong route?</h3>
-                    <p className="text-gray-600">If your driver deviates from the intended route or takes a wrong turn, you can use the in-app map to check the progress of your ride. If you believe there is an issue, please report it to ZappCab support, and we will investigate the matter.</p>
+                    <p className="text-gray-600">If your driver deviates from the intended route or takes a wrong turn, you can use the in-app map to check the progress of your ride. If you believe there is an issue, please report it to RideIT support, and we will investigate the matter.</p>
                   </div>
                   <div>
                     <h3 className="text-lg font-medium text-gray-700">8. How do I report a problem with my ride?</h3>
@@ -521,7 +514,7 @@ const Dashboard = () => {
               <section className="bg-white shadow-lg p-6 rounded-md mb-8">
                 <h2 className="text-2xl font-semibold text-gray-800 mb-4">Customer Care</h2>
                 <p className="text-gray-600 mb-2">
-                  At ZappCab, we are dedicated to providing excellent customer service. If you need assistance or have any issues with your ride, please contact our support team.
+                  At RideIT, we are dedicated to providing excellent customer service. If you need assistance or have any issues with your ride, please contact our support team.
                 </p>
                 <h3 className="text-xl font-medium text-gray-700 mt-4">Contact Information</h3>
                 <ul className="list-disc pl-6 text-gray-600">

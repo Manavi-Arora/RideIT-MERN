@@ -9,7 +9,7 @@ const Model = ({ glbPath }) => {
 
 const Scene = (props) => {
   return (
-    <Canvas camera={{ position: [0, 2, 5], fov: 100 }}>
+    <Canvas camera={{ position: [0, 2, 5], fov: 20 }}>
       <ambientLight intensity={0.5} />
       <directionalLight position={[5, 5, 5]} />
       <Model glbPath={`${props.vehicle}.glb`} />

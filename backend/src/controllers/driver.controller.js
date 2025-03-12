@@ -18,7 +18,7 @@ export const checkAuth = async (req, res) => {
       res.status(200).json(driver); // Send all fields
 
   } catch (error) {
-      console.log("Error in checkAuth controller", error.message);
+      console.log("Error in checkAuth controller backend", error.message);
       res.status(500).json({ message: "Internal Server Error" });
   }
 };
@@ -213,10 +213,9 @@ export const driverDashboard = async (req, res) => {
 };
 export const getDriverRidesHistory = async (req, res) => {
   try {
-    console.log("Raw Driver ID from JWT:", req.userId); // Debugging
-
+    //console.log("Raw Driver ID from JWT:", req.userId); // Debugging
     const driverId = new mongoose.Types.ObjectId(req.userId); // Convert to ObjectId
-    console.log("Converted Driver ID:", driverId);
+    //console.log("Converted Driver ID:", driverId);
 
     // Fetch all rides associated with the driver
     const rides = await Ride.find({ driverId }) 
@@ -225,7 +224,7 @@ export const getDriverRidesHistory = async (req, res) => {
       .populate("riderId", "-password -__v") // Populate rider details & exclude sensitive fields
       .select("-__v"); // Exclude version field (__v)
 
-    console.log("Fetched Rides:", rides);
+    //console.log("Fetched Rides:", rides);
 
     if (!rides.length) {
       return res.status(404).json({ message: "No rides found for this driver." });

@@ -12,9 +12,10 @@ export const useDriverStore = create((set, get) => ({
     findingDriver: false,
     isUpdatingProfile : false,
     driverRideHistory : null,
+    isCheckingAuth: true,
     setFindingDriver: (findingDriver) => set({ findingDriver }),
 
-    checkAuth: async () => {
+    checkAuthDriver: async () => {
         try {
             const res = await axiosInstance.get("/driver/check");
             console.log("Full Auth Driver Data:", res.data);
@@ -23,8 +24,9 @@ export const useDriverStore = create((set, get) => ({
         } catch (error) {
             console.log("Error in checkAuth", error.message);
             set({ authDriver: null });
-        } finally {
-            set({ isCheckingAuth: false });
+        } 
+        finally{
+            set({isCheckingAuth:false});
         }
     },
     signup: async (data) => {
