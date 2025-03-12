@@ -8,6 +8,6 @@ router.post("/login", login);
 router.post("/logout", logout);
 
 router.get("/check", protectRoute, checkAuth);
-router.get("/ride-history", protectRoute, getUserRidesHistory);
+router.get("/user-ride-history", protectRoute, getUserRidesHistory);
 
 export default router;

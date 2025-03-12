@@ -25,7 +25,9 @@ export default function App() {
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
-
+  useEffect(() => {
+    console.log(authDriver);
+  }, [authDriver]);
   return (
   
     <Router> 
@@ -45,9 +47,9 @@ export default function App() {
         <Route path="/" element={<Front />} />
         <Route path="/signup/captain" element={<DriverSignUp setProgress = {setProgress} />} />
         <Route path="/driver/complete-profile" element={authDriver && authDriver.profileCompleted ? <Navigate to = '/dashboard'/> : <CompleteProfile setProgress = {setProgress} />} />
-        <Route path="/login/captain" element={<DriverLogin setProgress = {setProgress} />} />
+        <Route path="/login/captain" element={authDriver ? <Navigate to = '/dashboard'/> : <DriverLogin setProgress = {setProgress} />} />
         <Route path="/activity" element={authUser ? <Activity /> : <Navigate to = '/home'/> } />   
-        <Route path="/dashboard" element={authDriver ? <Navigate to = '/dashboard'/> :<DriverSignUp setProgress = {setProgress} />} />
+        <Route path="/dashboard" element={<Dashboard/> } />
         </Routes>
         <Toaster />
       </div>

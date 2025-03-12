@@ -31,7 +31,7 @@ export const useAuthStore = create((set, get) => ({
     set({ isFetchingRideHistory: true });
 
     try {
-      const res = await axiosInstance.get("/auth/ride-history"); // API call
+      const res = await axiosInstance.get("/auth/user-ride-history"); // API call
       set({ rideHistory: res.data.rides }); // Store ride history in Zustand state
     } catch (error) {
       toast.error("Failed to fetch ride history.");

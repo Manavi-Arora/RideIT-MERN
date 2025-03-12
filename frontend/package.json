@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@lottiefiles/dotlottie-react": "^0.13.0",
+    "@react-three/drei": "^10.0.4",
+    "@react-three/fiber": "^9.1.0",
     "axios": "^1.7.9",
     "html2canvas": "^1.4.1",
     "lucide-react": "^0.475.0",

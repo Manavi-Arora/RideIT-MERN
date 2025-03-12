@@ -60,7 +60,7 @@ const CompleteProfile = (props) => {
     2: "Moto",
     3: "Auto",
     4: "SUV",
-    5: "Luxury Car",
+    5: "LuxuryCar",
   };
 
   const vehicles = [

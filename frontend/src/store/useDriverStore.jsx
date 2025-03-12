@@ -11,11 +11,13 @@ export const useDriverStore = create((set, get) => ({
     assignedDriver: null,
     findingDriver: false,
     isUpdatingProfile : false,
+    driverRideHistory : null,
     setFindingDriver: (findingDriver) => set({ findingDriver }),
 
     checkAuth: async () => {
         try {
             const res = await axiosInstance.get("/driver/check");
+            console.log("Full Auth Driver Data:", res.data);
             set({ authDriver: res.data });
             //get().connectSocket();
         } catch (error) {
@@ -142,5 +144,17 @@ export const useDriverStore = create((set, get) => ({
         } finally {
             set({ isUpdatingProfile: false });
         }
-    }    
+    },
+
+    fetchDriverRideHistory: async () => {
+        
+        try {
+          const res = await axiosInstance.get("/driver/driver-ride-history"); 
+          set({ driverRideHistory: res.data.rides });
+        } catch (error) {
+          toast.error("Failed to fetch driver ride history.");
+          console.error("Error fetching driver ride history:", error);
+        } 
+      },
+       
 }));

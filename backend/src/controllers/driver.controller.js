@@ -2,14 +2,25 @@ import { generateToken } from "../lib/utils.js";
 import Driver from "../models/driver.model.js";
 import bcrypt from "bcryptjs";
 import cloudinary from "../lib/cloudinary.js";
+import Ride from "../models/ride.model.js";
+import mongoose from "mongoose";
 
-export const checkAuth = (req, res) => {
-    try {
-      res.status(200).json(req.user);
-    } catch (error) {
+export const checkAuth = async (req, res) => {
+  try {
+      const driver = await Driver.findById(req.userId); // Fetch all fields
+      
+      if (!driver) {
+          return res.status(404).json({ message: "Driver not found" });
+      }
+
+      //console.log("Driver Details:", driver); // Debugging
+
+      res.status(200).json(driver); // Send all fields
+
+  } catch (error) {
       console.log("Error in checkAuth controller", error.message);
       res.status(500).json({ message: "Internal Server Error" });
-    }
+  }
 };
 
 export const signup = async (req, res) => {
@@ -69,7 +80,6 @@ export const signup = async (req, res) => {
   };
   
   export const login = async (req, res) => {
-    console.log(req);
     const { email, password } = req.body;
     try {
       const user = await Driver.findOne({ email });
@@ -143,8 +153,8 @@ export const completeProfile = async (req, res) => {
     const driverId = req.userId;
     const { licenseNumber, vehicleType, vehicleModel, vehicleNumber, profilePic } = req.body;
 
-    console.log("Driver ID:", driverId);
-    console.log("Received Data:", licenseNumber);
+    // console.log("Driver ID:", driverId);
+    // console.log("Received Data:", licenseNumber);
 
     if (!licenseNumber || !vehicleType || !vehicleModel || !vehicleNumber || !profilePic) {
       return res.status(400).json({ message: "All fields are required!" });
@@ -201,4 +211,30 @@ export const driverDashboard = async (req, res) => {
       res.status(500).json({ message: "Server error", error });
   }
 };
+export const getDriverRidesHistory = async (req, res) => {
+  try {
+    console.log("Raw Driver ID from JWT:", req.userId); // Debugging
 
+    const driverId = new mongoose.Types.ObjectId(req.userId); // Convert to ObjectId
+    console.log("Converted Driver ID:", driverId);
+
+    // Fetch all rides associated with the driver
+    const rides = await Ride.find({ driverId }) 
+      .sort({ pickupTime: -1 })
+      .populate("driverId", "-password -__v") 
+      .populate("riderId", "-password -__v") // Populate rider details & exclude sensitive fields
+      .select("-__v"); // Exclude version field (__v)
+
+    console.log("Fetched Rides:", rides);
+
+    if (!rides.length) {
+      return res.status(404).json({ message: "No rides found for this driver." });
+    }
+
+    res.status(200).json({ rides });
+
+  } catch (error) {
+    console.error("Error fetching driver ride history:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
