@@ -115,7 +115,7 @@ export const logout = (req, res) => {
 export const getUserRidesHistory = async (req, res) => {
   try {
     const { id: userId } = req.params;
-    console.log("Fetching rides for user:", userId); // Debug log
+    // console.log("Fetching rides for user:", userId); // Debug log
 
     if (!userId) {
       return res.status(400).json({ message: "User ID is required" });
@@ -127,7 +127,7 @@ export const getUserRidesHistory = async (req, res) => {
       .populate("driverId", "fullName email phoneNumber profilePic")
       .select("-__v");
 
-    console.log("Fetched rides:", rides); // Debug log
+    // console.log("Fetched rides:", rides); // Debug log
 
     if (!rides.length) {
       return res.status(404).json({ message: "No rides found for this user" });

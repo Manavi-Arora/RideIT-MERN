@@ -92,7 +92,7 @@ export const useDriverStore = create((set, get) => ({
             { name: "RideIT Moto", vehicleType: "Moto" },
             { name: "RideIT GO", vehicleType: "Car" },
             { name: "RideIT XL", vehicleType: "SUV" },
-            { name: "RideIT Premier", vehicleType: "Luxury Car" }
+            { name: "RideIT Premier", vehicleType: "LuxuryCar" }
         ];
 
         const matchingRide = rideData.find((ride) => ride.name === rideDetails?.name);
