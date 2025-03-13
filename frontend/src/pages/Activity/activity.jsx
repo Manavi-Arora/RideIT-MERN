@@ -8,13 +8,13 @@ import Header from "../../components/user/Header";
 const Activity = () => {
     const [showImage, setShowImage] = useState(false);
     // Function to toggle image visibility
-    const { fetchRideHistory, rideHistory, isFetchingRideHistory } = useAuthStore();
+    const { fetchRideHistory, rideHistory, isFetchingRideHistory,authUser } = useAuthStore();
     const showImg = () => {
         setShowImage((prev) => !prev);
     };
     useEffect(() => {
-        fetchRideHistory();
-    }, [fetchRideHistory]);
+        fetchRideHistory(authUser._id);
+    }, []);
 
     if (isFetchingRideHistory)
         return (

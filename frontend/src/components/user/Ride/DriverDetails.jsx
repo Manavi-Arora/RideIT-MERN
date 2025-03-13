@@ -28,7 +28,7 @@ const DriverDetails = () => {
         distance: rideDetails.distance,
       };
   
-      console.log("🚖 Ride Data being sent:", rideData);
+    //   console.log("🚖 Ride Data being sent:", rideData);
   
       try {
         await bookRide(rideData);

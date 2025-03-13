@@ -1,23 +1,24 @@
 import { create } from "zustand";
 import { axiosInstance } from "../lib/axios";
 import toast from "react-hot-toast";
-
+import { useDriverStore } from "./useDriverStore";
 const BASE_URL = import.meta.env.MODE === "development" ? "http://localhost:3000" : "/"
 export const useAuthStore = create((set, get) => ({
-  
+
   authUser: null,
   isSigningUp: false,
   isLoggingIn: false,
   isCheckingAuth: true,
-  showSidebar : true,
+  showSidebar: true,
   rideHistory: [],
   isFetchingRideHistory: false,
-  setShowSidebar : (value) => set({showSidebar : value}),
-
+  setShowSidebar: (value) => set({ showSidebar: value }),
+  setAuthUser: (user) => set({ authUser: user }),
   checkAuth: async () => {
     try {
       const res = await axiosInstance.get("/auth/check");
       set({ authUser: res.data });
+      useDriverStore.getState().setAuthDriver(null);
       //get().connectSocket();
     } catch (error) {
       console.log("Error in checkAuth", error.message);
@@ -27,19 +28,16 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
-  fetchRideHistory: async () => {
-    set({ isFetchingRideHistory: true });
-
+  fetchRideHistory: async (id) => {
     try {
-      const res = await axiosInstance.get("/auth/user-ride-history"); // API call
-      set({ rideHistory: res.data.rides }); // Store ride history in Zustand state
+      const res = await axiosInstance.get(`/auth/user-ride-history/${id}`);
+      console.log("Ride history:", res.data.rides);
+      set({ rideHistory: res.data.rides });
     } catch (error) {
-      toast.error("Failed to fetch ride history.");
       console.error("Error fetching ride history:", error);
-    } finally {
-      set({ isFetchingRideHistory: false });
     }
   },
+
 
   signup: async (data) => {
     set({ isSigningUp: true });
@@ -47,6 +45,7 @@ export const useAuthStore = create((set, get) => ({
     try {
       const res = await axiosInstance.post("/auth/signup", data);
       set({ authUser: res.data });
+      useDriverStore.getState().setAuthDriver(null);
       toast.success("Account created successfully");
     } catch (error) {
       toast.error(error.response.data.message);
@@ -61,6 +60,7 @@ export const useAuthStore = create((set, get) => ({
     try {
       const res = await axiosInstance.post("/auth/login", data);
       set({ authUser: res.data });
+      useDriverStore.getState().setAuthDriver(null);
       toast.success("Logged in successfully");
     } catch (error) {
       toast.error(error.response.data.message);

@@ -69,7 +69,7 @@ export const bookRide = async (req, res) => {
       return res.status(404).json({ message: "Driver not found." });
     }
 
-    console.log("Check:", { riderId, driverId });
+    // console.log("Check:", { riderId, driverId });
 
     // Create a new ride
     const newRide = new Ride({

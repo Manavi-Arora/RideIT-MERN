@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { axiosInstance } from "../lib/axios";
 import toast from "react-hot-toast";
 import { useRideStore } from "./useRideStore";
+import { useAuthStore } from "./useAuthStore";
 
 export const useDriverStore = create((set, get) => ({
     authDriver: null,
@@ -14,12 +15,13 @@ export const useDriverStore = create((set, get) => ({
     driverRideHistory : null,
     isCheckingAuth: true,
     setFindingDriver: (findingDriver) => set({ findingDriver }),
-
+    setAuthDriver: (driver) => set({ authDriver: driver }),
     checkAuthDriver: async () => {
         try {
             const res = await axiosInstance.get("/driver/check");
             console.log("Full Auth Driver Data:", res.data);
             set({ authDriver: res.data });
+            useAuthStore.getState().setAuthUser(null);
             //get().connectSocket();
         } catch (error) {
             console.log("Error in checkAuth", error.message);
@@ -35,6 +37,7 @@ export const useDriverStore = create((set, get) => ({
         try {
             const res = await axiosInstance.post("/driver/signup", data);
             set({ authDriver: res.data });
+            useAuthStore.getState().setAuthUser(null);
             toast.success("Account created successfully");
             return res.data; 
         } catch (error) {
@@ -50,6 +53,7 @@ export const useDriverStore = create((set, get) => ({
         try {
             const res = await axiosInstance.post("/driver/login", data);
             set({ authDriver: res.data });
+            useAuthStore.getState().setAuthUser(null);
             toast.success("Logged in successfully");
         } catch (error) {
             toast.error(error.response.data.message);
