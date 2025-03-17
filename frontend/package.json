@@ -24,6 +24,8 @@
     "react-router-dom": "^7.1.5",
     "react-select": "^5.10.0",
     "react-top-loading-bar": "^3.0.2",
+    "rideit": "file:..",
+    "socket.io-client": "^4.8.1",
     "zustand": "^5.0.3"
   },
   "devDependencies": {

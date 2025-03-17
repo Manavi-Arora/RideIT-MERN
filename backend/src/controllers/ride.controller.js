@@ -2,6 +2,7 @@ import Ride from "../models/ride.model.js";
 import Driver from "../models/driver.model.js";
 import Razorpay from "razorpay";
 import User from "../models/user.model.js";
+import {io,getDriverSocketId} from "../lib/socket.js"
 
 export const paymentByRazorpay = async (req, res) => {
   try {
@@ -93,5 +94,32 @@ export const bookRide = async (req, res) => {
   } catch (error) {
     console.error("Error booking ride:", error);
     res.status(500).json({ message: "Server error while booking ride" });
+  }
+};
+
+export const checkDriverAvailability =(req,res) => {
+  try {
+    const rideDetails = req.body;
+    const driverId = req.params.id;
+    let accepted = false; // Set default value
+    
+    const driverSocketId = getDriverSocketId(driverId);
+    console.log("Emitting to:",driverSocketId);
+    // Create a promise to handle the response asynchronously
+    const rideAcceptedPromise = new Promise((resolve) => {
+      io.to(driverSocketId).emit("newRide", rideDetails, (response) => {
+        accepted = response; // Update accepted value
+        resolve(); // Resolve the promise once the response is received
+      });
+    });
+    
+    // Wait for the driver to respond before sending the response
+    rideAcceptedPromise.then(() => {
+      console.log("drv acpt:",accepted);
+      res.status(200).json({ accepted: accepted });
+    });
+    
+  } catch (error) {
+    res.status(500).json({message : "Internal Server Error"})
   }
 };

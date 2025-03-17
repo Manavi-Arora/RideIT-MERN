@@ -4,7 +4,8 @@
   "description": "",
   "main": "./src/index.js",
   "scripts": {
-    "dev": "nodemon main"
+    "dev": "nodemon main",
+    "start": "node src/index.js"
   },
   "keywords": [],
   "author": "",
@@ -20,7 +21,9 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.10.0",
     "multer": "^1.4.5-lts.1",
-    "razorpay": "^2.9.5"
+    "razorpay": "^2.9.5",
+    "rideit": "file:..",
+    "socket.io": "^4.8.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.9"

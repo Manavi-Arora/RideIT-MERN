@@ -1,11 +1,11 @@
-import React, { useEffect } from "react";
+import React, { useEffect,useState } from "react";
 import { Pencil, CheckCircle, XCircle, Car, Mail, Phone, Star, BadgeCheck } from "lucide-react";
 import { useDriverStore } from "../../store/useDriverStore";
 import { Link } from "react-router-dom";
 
 const DriverProfile = () => {
   const { authDriver, checkAuthDriver,logout } = useDriverStore();
-
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
   useEffect(() => {
     checkAuthDriver();
   }, []);
@@ -17,9 +17,43 @@ const DriverProfile = () => {
   if (!authDriver) return <p className="text-center text-gray-500">No driver data available</p>;
 
   return (
-    <div className="flex w-screen bg-white">
+    <div className="flex w-screen bg-white relative">
+      <button
+        className="btn btn-circle swap swap-rotate fixed z-40 md:hidden"
+        onClick={() => setSidebarOpen(!isSidebarOpen)}
+      >
+        {/* Hamburger Icon */}
+        {!isSidebarOpen ? (
+          <svg
+            className="fill-current cursor-pointer"
+            xmlns="http://www.w3.org/2000/svg"
+            width="32"
+            height="32"
+            viewBox="0 0 512 512"
+          >
+            <path d="M64,384H448V341.33H64Zm0-106.67H448V234.67H64ZM64,128v42.67H448V128Z" />
+          </svg>
+        ) : (
+          /* Close Icon */
+          <svg
+            className="fill-current"
+            xmlns="http://www.w3.org/2000/svg"
+            width="32"
+            height="32"
+            viewBox="0 0 512 512"
+          >
+            <path d="M400 145L367 112 256 223 145 112 112 145 223 256 112 367 145 400 256 289 367 400 400 367 289 256 400 145Z" />
+          </svg>
+        )}
+      </button>
       {/* Sidebar */}
-      <div id='sidebardash' className="fixed left-0 top-18 w-64 h-full bg-[#f8f4f3] p-4 sidebar-menu transition-transform hidden md:block">
+      <div
+  key={isSidebarOpen} // Forces re-render
+  id="sidebardash"
+  className={`fixed left-0 top-0 w-64 h-full bg-[#f8f4f3] p-4 transition-all duration-300 ease-in-out transform z-30 
+  ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} 
+  md:translate-x-0 md:block`}
+>
         <ul className="mt-4">
           <span className="text-gray-400 font-bold">ADMIN</span>
           <li className="mb-1 group">
@@ -52,7 +86,7 @@ const DriverProfile = () => {
       </div>
 
       {/* Main Content */}
-      <div className="w-2/3 h-screen mx-auto bg-white p-6 space-y-6 fixed right-32">
+      <div className="w-screen md:w-2/3 h-screen mx-auto bg-white p-6 space-y-6 fixed md:right-32">
         {/* Profile Section */}
         <div className="flex justify-between items-center bg-gray-100 p-4 rounded-lg">
           <div className="flex items-center space-x-4">

@@ -9,7 +9,7 @@ const rideSchema = new mongoose.Schema({
     driverId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Driver", // Reference to the driver (Driver model)
-      required: true,
+      // required: true,
     },
     rideName : {
       type:String,
@@ -41,7 +41,7 @@ const rideSchema = new mongoose.Schema({
     },
     rideStatus: {
       type: String,
-      enum: ['booked', 'in-progress', 'completed', 'cancelled'],
+      enum: ['booked', 'requested', 'completed', 'cancelled'],
       default: 'booked',
     },
     distance: {

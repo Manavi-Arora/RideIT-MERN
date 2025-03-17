@@ -3,19 +3,49 @@ import Scene from "../../lib/Scene"
 import { useDriverStore } from '../../store/useDriverStore'
 import { useRideStore } from '../../store/useRideStore';
 import { Link } from "react-router-dom";
-const Dashboard = () => {
-  const { authDriver, driverRideHistory, fetchDriverRideHistory, checkAuthDriver,logout } = useDriverStore();
+import { axiosInstance } from "../../lib/axios"
 
+const Dashboard = () => {
+  const { authDriver, subscribeToRides, unsubscribeFromRides, driverRideHistory, fetchDriverRideHistory, checkAuthDriver, logout } = useDriverStore();
+
+  const [rideRequest, setRideRequest] = useState(null);
   const getDayName = (date) => {
     const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
     return days[date.getDay()];
   }
+
   useEffect(() => {
     fetchDriverRideHistory();
     checkAuthDriver();
+
   }, []);
 
-  
+  useEffect(() => {
+    subscribeToRides();
+    return () => { unsubscribeFromRides() }
+  }, [subscribeToRides, unsubscribeFromRides])
+
+  const handleResponse = async (accepted) => {
+    if (!rideRequest) return;
+
+    try {
+      const response = await axiosInstance.post("/ride/respond", {
+        rideId: rideRequest.rideId,
+        driverId: authUser._id, // ✅ Ensure backend knows which driver is responding
+        accepted,
+      });
+
+      if (response.data.success) {
+        toast.success(`Ride ${accepted ? "Accepted" : "Rejected"}!`);
+        setRideRequest(null);
+      }
+    } catch (error) {
+      console.error("❌ Error responding to ride:", error);
+      toast.error("Failed to respond to ride request.");
+    }
+  };
+
+
   let totalfares = 0
 
   driverRideHistory?.forEach((ride) => {
@@ -23,52 +53,71 @@ const Dashboard = () => {
   });
   totalfares = totalfares.toFixed(2);
 
-  const DriverLogout = ()=>{
+  const DriverLogout = () => {
     logout();
   }
 
-  const vehicleUrl = 
-  authDriver?.vehicleType === "Car" ? "https://d1a3f4spazzrp4.cloudfront.net/car-types/haloProductImages/Hatchback.png" :
-  authDriver?.vehicleType === "Moto" ? "https://d1a3f4spazzrp4.cloudfront.net/car-types/haloProductImages/v1.1/Uber_Moto_India1.png" :
-  authDriver?.vehicleType === "Auto" ? "https://d1a3f4spazzrp4.cloudfront.net/car-types/haloProductImages/v1.1/TukTuk_Green_v1.png" :
-  authDriver?.vehicleType === "SUV" ? "https://d1a3f4spazzrp4.cloudfront.net/car-types/haloProductImages/package_UberXL_new_2022.png" :
-  authDriver?.vehicleType === "LuxuryCar" ? "https://d1a3f4spazzrp4.cloudfront.net/car-types/haloProductImages/package_UberComfort_new_2022.png" :
-  null;
+  const vehicleUrl =
+    authDriver?.vehicleType === "Car" ? "https://d1a3f4spazzrp4.cloudfront.net/car-types/haloProductImages/Hatchback.png" :
+      authDriver?.vehicleType === "Moto" ? "https://d1a3f4spazzrp4.cloudfront.net/car-types/haloProductImages/v1.1/Uber_Moto_India1.png" :
+        authDriver?.vehicleType === "Auto" ? "https://d1a3f4spazzrp4.cloudfront.net/car-types/haloProductImages/v1.1/TukTuk_Green_v1.png" :
+          authDriver?.vehicleType === "SUV" ? "https://d1a3f4spazzrp4.cloudfront.net/car-types/haloProductImages/package_UberXL_new_2022.png" :
+            authDriver?.vehicleType === "LuxuryCar" ? "https://d1a3f4spazzrp4.cloudfront.net/car-types/haloProductImages/package_UberComfort_new_2022.png" :
+              null;
   const [showTerms, setShowTerms] = useState(false)
-
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
   return (
-    <div>
-      <label className="btn btn-circle swap swap-rotate fixed z-40 m-5 md:hidden">
-        {/* this hidden checkbox controls the state */}
-        <input
-          onClick={() => {
-            if (document.getElementById('sidebardash').classList.contains('hidden')) { document.getElementById('sidebardash').classList.remove('hidden') }
-            else { document.getElementById('sidebardash').classList.add('hidden') }
-          }} type="checkbox" />
+    <div className="relative">
+      {/* ✅ Hamburger Button */}
+      <button
+        className="btn btn-circle swap swap-rotate fixed z-40 md:hidden"
+        onClick={() => setSidebarOpen(!isSidebarOpen)}
+      >
+        {/* Hamburger Icon */}
+        {!isSidebarOpen ? (
+          <svg
+            className="fill-current cursor-pointer"
+            xmlns="http://www.w3.org/2000/svg"
+            width="32"
+            height="32"
+            viewBox="0 0 512 512"
+          >
+            <path d="M64,384H448V341.33H64Zm0-106.67H448V234.67H64ZM64,128v42.67H448V128Z" />
+          </svg>
+        ) : (
+          /* Close Icon */
+          <svg
+            className="fill-current"
+            xmlns="http://www.w3.org/2000/svg"
+            width="32"
+            height="32"
+            viewBox="0 0 512 512"
+          >
+            <path d="M400 145L367 112 256 223 145 112 112 145 223 256 112 367 145 400 256 289 367 400 400 367 289 256 400 145Z" />
+          </svg>
+        )}
+      </button>
 
-        {/* hamburger icon */}
-        <svg
-          className="swap-off fill-current"
-          xmlns="http://www.w3.org/2000/svg"
-          width="32"
-          height="32"
-          viewBox="0 0 512 512">
-          <path d="M64,384H448V341.33H64Zm0-106.67H448V234.67H64ZM64,128v42.67H448V128Z" />
-        </svg>
-
-        {/* close icon */}
-        <svg
-          className="swap-on fill-current"
-          xmlns="http://www.w3.org/2000/svg"
-          width="32"
-          height="32"
-          viewBox="0 0 512 512">
-          <polygon
-            points="400 145.49 366.51 112 256 222.51 145.49 112 112 145.49 222.51 256 112 366.51 145.49 400 256 289.49 366.51 400 400 366.51 289.49 256 400 145.49" />
-        </svg>
-      </label>
-      <div id='sidebardash' class="fixed left-0 top-18 w-64 h-full bg-[#f8f4f3] p-4 sidebar-menu transition-transform hidden md:block">
-
+      {/* 🚗 Ride Request Section */}
+      {rideRequest && (
+        <div className="p-4 border rounded shadow-md bg-white mb-4">
+          <h3 className="text-lg font-bold">New Ride Request</h3>
+          <p>Pickup: {rideRequest?.rideDetails.startLocation}</p>
+          <p>Dropoff: {rideRequest?.rideDetails.endLocation}</p>
+          <p>Fare: ₹{rideRequest?.rideDetails.fareAmount}</p>
+          <div className="mt-4 flex gap-4">
+            <button className="bg-green-500 text-white p-2 rounded" onClick={() => handleResponse(true)}>Accept</button>
+            <button className="bg-red-500 text-white p-2 rounded" onClick={() => handleResponse(false)}>Reject</button>
+          </div>
+        </div>
+      )}
+      <div
+        key={isSidebarOpen} // Forces re-render
+        id="sidebardash"
+        className={`fixed left-0 top-0 w-64 h-full bg-[#f8f4f3] p-4 transition-all duration-300 ease-in-out transform z-30 
+  ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} 
+  md:translate-x-0 md:block`}
+      >
         <ul class="mt-4">
           <span class="text-gray-400 font-bold">ADMIN</span>
           <li class="mb-1 group">
@@ -96,7 +145,7 @@ const Dashboard = () => {
               <span class="text-sm">Profile</span>
             </Link>
           </li>
-         
+
           <li class="mb-1 group" onClick={DriverLogout}>
             <p class="flex cursor-pointer font-semibold items-center py-2 px-4 text-gray-900 hover:bg-gray-950 hover:text-gray-100 rounded-md group-[.active]:bg-gray-800 group-[.active]:text-white group-[.selected]:bg-gray-950 group-[.selected]:text-gray-100">
               <span class="text-sm">Logout</span>
@@ -123,7 +172,6 @@ const Dashboard = () => {
           </li>
         </ul>
       </div>
-      <div class="fixed top-0 left-0 w-full h-full bg-black/50 z-40 md:hidden sidebar-overlay"></div>
 
       {!showTerms ?
         <div class="w-full md:w-[calc(100%-256px)] md:ml-64 bg-gray-200 min-h-screen transition-all main">
@@ -160,7 +208,7 @@ const Dashboard = () => {
                         </div>
                       </div>
                     </div>
-                     <Scene vehicle={authDriver.vehicleType}/> 
+                    <Scene vehicle={authDriver.vehicleType} />
                   </div>
                 </dialog>}
               </div>

@@ -43,7 +43,7 @@ const RateList = () => {
     setFindingDriver(true);
     await fetchDrivers();
     //console.log(drivers);
-    assignDriver();
+    await assignDriver();
     setFindingDriver(false);
     setShowRateList(false);
   }

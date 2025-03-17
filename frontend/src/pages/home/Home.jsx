@@ -1,4 +1,4 @@
-import React from 'react'
+import React,{useEffect} from 'react'
 import Header from '../../components/user/Header';
 import Sidebar from '../../components/user/Sidebar';
 import MapContainer from '../../components/user/MapContainer';
@@ -6,8 +6,13 @@ import { useDriverStore } from '../../store/useDriverStore';
 import { useAuthStore } from '../../store/useAuthStore';
 
 const Home = () => {
-  const {findingDriver} = useDriverStore();
-  const {showSidebar} = useAuthStore();
+  const { subscribeToDrivers, unsubscribeFromDrivers, showSidebar } = useAuthStore();
+
+  useEffect(() => {
+    subscribeToDrivers()
+    return () => { unsubscribeFromDrivers() }
+  }, [subscribeToDrivers, unsubscribeFromDrivers])
+
   return (
     <div className="flex flex-col w-screen h-screen">
       <Header />
